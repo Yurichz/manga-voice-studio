@@ -1,6 +1,6 @@
 # Product scope
 
-Manga Voice Studio is a local editor for narrating manga and comics. One project represents a work; its chapters share character profiles and pinned voice versions. The initial interface and speech workflow target Russian.
+Manga Voice Studio is a local editor for narrating manga and comics. One project represents a work; its chapters share character profiles and pinned voice versions. The interface is English. New projects default to English text and speech; existing projects retain their settings, and Russian pronunciation support remains available.
 
 ## Main workflow
 

@@ -22,7 +22,7 @@ export class AnalysisClService {
     const a = await this.repository.applyAnalysisAnalysisRunFindUnique(analysisId);
 
     if (!a) {
-      throw new ApiError(404, 'Анализ не найден');
+      throw new ApiError(404, 'Analysis not found');
     }
 
     const p = await this.access.page(ownerId, a.pageId);
@@ -30,14 +30,14 @@ export class AnalysisClService {
     const proposal = analysisSchema.parse(a.proposal);
 
     if (p.revision !== a.inputRevision || p.revision !== v.expectedRevision || a.status !== 'proposed') {
-      throw new ApiError(409, 'Предложение устарело или уже применено');
+      throw new ApiError(409, 'The proposal is stale or has already been applied');
     }
 
     await this.prisma.$txe(async (tx) => {
       const n = await this.repository.tx(tx).applyAnalysisPageUpdateMany(p.id, v.expectedRevision);
 
       if (!n.count) {
-        throw new ApiError(409, 'Версия страницы изменилась');
+        throw new ApiError(409, 'The page revision changed');
       }
 
       if (v.includePanels) {
@@ -57,7 +57,7 @@ export class AnalysisClService {
         const u = proposal.utterances[i];
 
         if (!u) {
-          throw new ApiError(422, 'Некорректный элемент');
+          throw new ApiError(422, 'Invalid item');
         }
 
         await this.repository

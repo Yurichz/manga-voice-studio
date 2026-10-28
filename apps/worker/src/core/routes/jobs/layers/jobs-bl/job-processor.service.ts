@@ -64,7 +64,7 @@ export class JobProcessorService {
         const n = await this.progress.write(jobId, token, { ...value, completedPhases: [...seen].filter((p) => p !== value.phase) });
 
         if (!n.count && epoch === undefined) {
-          throw new UnrecoverableError('Задание отменено или попытка завершена');
+          throw new UnrecoverableError('The job was cancelled or this attempt has ended');
         }
       });
 
@@ -76,7 +76,7 @@ export class JobProcessorService {
       const current = await this.repository.processJobJobFindUnique(jobId);
 
       if (current?.status !== 'running' || current.attemptToken !== token) {
-        throw new UnrecoverableError('Задание отменено');
+        throw new UnrecoverableError('The job was cancelled');
       }
 
       aiEpoch = ++sequence;
@@ -148,7 +148,7 @@ export class JobProcessorService {
       const p = await this.repository.processJobProjectFindFirst(j.projectId, j.ownerId);
 
       if (!p) {
-        throw new UnrecoverableError('Проект удалён');
+        throw new UnrecoverableError('The project was deleted');
       }
 
       await phase('preparing');

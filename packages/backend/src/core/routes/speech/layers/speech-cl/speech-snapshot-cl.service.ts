@@ -18,23 +18,23 @@ export class SpeechSnapshotClService {
     const u = await this.repository.speechSnapshotUtteranceFindUnique(utteranceId);
 
     if (!u) {
-      throw new ApiError(404, 'Реплика не найдена');
+      throw new ApiError(404, 'Utterance not found');
     }
 
     const p = await this.access.project(ownerId, u.projectId);
 
     if (!u.included || !u.spokenText.trim() || !u.voiceVersionId) {
-      throw new ApiError(422, 'Реплика требует текста и явно выбранного голоса');
+      throw new ApiError(422, 'The utterance requires text and an explicitly selected voice');
     }
 
     if (u.reviewStatus !== 'reviewed' && !allowUnreviewed) {
-      throw new ApiError(422, 'Сначала проверьте реплику');
+      throw new ApiError(422, 'Review the utterance first');
     }
 
     const voice = await this.repository.speechSnapshotVoiceProfileVersionFindFirst(u.voiceVersionId, u.projectId);
 
     if (!voice) {
-      throw new ApiError(422, 'Голос недоступен');
+      throw new ApiError(422, 'The voice is unavailable');
     }
 
     const [prepared] = await prepareSpeechTexts([u.spokenText], p.speechLanguage);

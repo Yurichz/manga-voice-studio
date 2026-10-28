@@ -57,7 +57,7 @@ export class CharactersService {
     const c = await this.repository.previewMergeCharacterFindUnique(characterId);
 
     if (!c) {
-      throw new ApiError(404, 'Персонаж не найден');
+      throw new ApiError(404, 'Character not found');
     }
 
     await this.access.project(ownerId, c.projectId);
@@ -69,7 +69,7 @@ export class CharactersService {
     const ref = await this.repository.deleteReferenceCharacterReferenceFindUnique(referenceId);
 
     if (!ref) {
-      throw new ApiError(404, 'Референс не найден');
+      throw new ApiError(404, 'Reference not found');
     }
 
     await this.access.project(ownerId, ref.projectId);
@@ -82,14 +82,14 @@ export class CharactersService {
     const a = await this.repository.confirmAppearanceCharacterAppearanceFindUnique(appearanceId);
 
     if (!a) {
-      throw new ApiError(404, 'Область не найдена');
+      throw new ApiError(404, 'Region not found');
     }
 
     await this.access.project(ownerId, a.projectId);
     const v = input;
 
     if (v.characterId && !(await this.repository.confirmAppearanceCharacterFindFirst(v.characterId, a.projectId))) {
-      throw new ApiError(422, 'Персонаж другого проекта');
+      throw new ApiError(422, 'The character belongs to another project');
     }
 
     return await this.repository.confirmAppearanceCharacterAppearanceUpdate(a.id, v.characterId);
@@ -99,14 +99,14 @@ export class CharactersService {
     const c = await this.repository.createReferenceCharacterFindUnique(characterId);
 
     if (!c) {
-      throw new ApiError(404, 'Персонаж не найден');
+      throw new ApiError(404, 'Character not found');
     }
 
     const v = input;
     const p = await this.access.page(ownerId, v.pageId);
 
     if (p.projectId !== c.projectId) {
-      throw new ApiError(422, 'Страница другого проекта');
+      throw new ApiError(422, 'The page belongs to another project');
     }
 
     const crop = await sharp(await storage.read(p.imageKey))

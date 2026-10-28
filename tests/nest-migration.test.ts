@@ -49,7 +49,9 @@ describe.skipIf(process.env.MVS_RUN_INTEGRATION !== 'true')('Nest migration comp
     ownerId = first.id;
     cookie = first.cookie;
     foreignCookie = second.cookie;
-    const created = await request('/projects', 'POST', { title: 'Nest regression', ownerId: second.id });
+    const created = await request('/projects', 'POST', {
+      title: 'Nest regression', ownerId: second.id, textLanguage: 'ru', speechLanguage: 'Russian', readingDirection: 'ltr',
+    });
     expect(created.status).toBe(201);
     const project = (await created.json()) as any;
     expect(project.ownerId).toBe(ownerId);
@@ -69,7 +71,9 @@ describe.skipIf(process.env.MVS_RUN_INTEGRATION !== 'true')('Nest migration comp
     expect(await (await request('/me')).json()).toEqual({ ownerId, demo: false });
     const unauthorized = await request('/projects', 'GET', undefined, '');
     expect(unauthorized.status).toBe(401);
-    expect(((await unauthorized.json()) as any).error.requestId).toBe(unauthorized.headers.get('X-Request-Id'));
+    const unauthorizedBody = (await unauthorized.json()) as any;
+    expect(unauthorizedBody.error.requestId).toBe(unauthorized.headers.get('X-Request-Id'));
+    expect(unauthorizedBody.error.message).toBe('Sign-in required');
     const invalid = await request('/projects', 'POST', { title: '' });
     expect(invalid.status).toBe(422);
     expect(((await invalid.json()) as any).error.code).toBe('VALIDATION_ERROR');
@@ -106,6 +110,19 @@ describe.skipIf(process.env.MVS_RUN_INTEGRATION !== 'true')('Nest migration comp
     expect(
       document.paths['/projects/{projectId}/publication-export'].post.requestBody.content['application/json'].schema.properties.chapterIds,
     ).toBeDefined();
+  });
+  it('creates English projects through both API and Prisma defaults', async () => {
+    const response = await request('/projects', 'POST', { title: 'English defaults' });
+    expect(response.status).toBe(201);
+    const project = (await response.json()) as any;
+    const direct = await db.project.create({ data: { ownerId, title: 'Database defaults' } });
+    try {
+      for (const value of [project, direct]) {
+        expect(value).toMatchObject({ textLanguage: 'en', speechLanguage: 'English', readingDirection: 'rtl' });
+      }
+    } finally {
+      await db.project.deleteMany({ where: { id: { in: [project.id, direct.id] } } });
+    }
   });
   it('keeps private downloads and byte ranges compatible', async () => {
     const file = projectId + '/audio/fixture.wav';
@@ -250,7 +267,20 @@ describe.skipIf(process.env.MVS_RUN_INTEGRATION !== 'true')('Nest migration comp
       { 'Idempotency-Key': randomUUID() },
     );
     expect(queued.status).toBe(202);
-    expect((await request('/projects/' + projectId, 'PATCH', { title: 'Edited after snapshot', expectedRevision: 0 })).status).toBe(200);
+    const beforeRename = await db.project.findUniqueOrThrow({ where: { id: projectId } });
+    const beforeChapter = await db.chapter.findUniqueOrThrow({ where: { id: chapter.id } });
+    const renamed = await request('/projects/' + projectId, 'PATCH', { title: 'Edited after snapshot', expectedRevision: 0 });
+    expect(renamed.status).toBe(200);
+    expect(await renamed.json()).toMatchObject({
+      textLanguage: 'ru', speechLanguage: 'Russian', readingDirection: 'ltr', revision: beforeRename.revision + 1,
+    });
+    expect(await db.utterance.findUniqueOrThrow({ where: { id: utterance.id } }))
+      .toMatchObject({ activeAudioId: artifact.id, revision: utterance.revision, spokenText: voice.transcript });
+    expect(await db.page.findUniqueOrThrow({ where: { id: page.id } })).toMatchObject({ revision: page.revision });
+    expect(await db.chapter.findUniqueOrThrow({ where: { id: chapter.id } })).toMatchObject({ revision: beforeChapter.revision });
+    const conflict = await request('/projects/' + projectId, 'PATCH', { title: 'Stale edit', expectedRevision: 0 });
+    expect(conflict.status).toBe(409);
+    expect(((await conflict.json()) as any).error.message).toBe('The project revision changed');
     const job = await finished(((await queued.json()) as any).jobId);
     expect(job.input.snapshot.project.title).toBe('Nest regression');
     const download = await request('/files/' + job.result.fileKey);

@@ -37,7 +37,7 @@ export class ProjectsRepository extends TxScopeRepository {
   updateProjectProjectUpdateMany(
     value1: string,
     value2: number,
-    value3: { title: string; textLanguage: string; speechLanguage: string; readingDirection: 'rtl' | 'ltr' },
+    value3: { title?: string; textLanguage?: string; speechLanguage?: string; readingDirection?: 'rtl' | 'ltr' },
   ) {
     return this.$.project.updateMany({ where: { id: value1, revision: value2 }, data: { ...value3, revision: { increment: 1 } } });
   }

@@ -46,8 +46,8 @@ export class PublicationExportHandler implements JobHandler {
         ...exported,
         fileKey: key,
         snapshotNotice: changed
-          ? 'Во время экспорта произведение изменилось. Архив содержит целостный прежний snapshot.'
-          : 'Архив содержит выбранный snapshot.',
+          ? 'The project changed during export. The archive contains the complete earlier snapshot.'
+          : 'The archive contains the selected snapshot.',
       };
     } finally {
       clearInterval(cancellation);

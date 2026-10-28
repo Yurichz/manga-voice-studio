@@ -33,7 +33,7 @@ export class ChaptersService {
     const c = await this.repository.getChapterChapterFindUnique(chapterId);
 
     if (!c) {
-      throw new ApiError(404, 'Глава не найдена');
+      throw new ApiError(404, 'Chapter not found');
     }
 
     await this.access.project(ownerId, c.projectId);
@@ -49,14 +49,14 @@ export class ChaptersService {
     const c = await this.repository.importChapterChapterFindUnique(chapterId);
 
     if (!c) {
-      throw new ApiError(404, 'Глава не найдена');
+      throw new ApiError(404, 'Chapter not found');
     }
 
     await this.access.project(ownerId, c.projectId);
     const key = idempotencySchema.parse(idempotencyKey);
 
     if (!files?.length || files.reduce((n, f) => n + f.size, 0) > limits.totalBytes) {
-      throw new ApiError(422, 'Нет файлов или превышен лимит 500 MiB');
+      throw new ApiError(422, 'No files were provided or the 500 MiB limit was exceeded');
     }
 
     const stored = [];

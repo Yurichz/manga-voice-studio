@@ -56,13 +56,13 @@ export class VoicesService {
       .parse(xTranscript ? decodeURIComponent(xTranscript!) : undefined);
 
     if (xRightsConfirmed !== 'true' || !file || file.size > 20 * 1024 * 1024) {
-      throw new ApiError(422, 'Нужно подтвердить права и приложить WAV до 20 MiB');
+      throw new ApiError(422, 'Confirm your rights and attach a WAV file up to 20 MiB');
     }
 
     const b = file.buffer;
 
     if (b.subarray(0, 4).toString() !== 'RIFF' || b.subarray(8, 12).toString() !== 'WAVE') {
-      throw new ApiError(422, 'Ожидается WAV');
+      throw new ApiError(422, 'A WAV file is required');
     }
 
     const key = p.id + '/voices/' + randomUUID() + '.wav';

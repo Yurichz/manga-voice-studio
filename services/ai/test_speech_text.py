@@ -24,6 +24,20 @@ def test_known_numbers(source,expected):
 def test_ambiguous_numeric_forms_are_preserved_and_warn(text):
  result=prepare_speech_text(text,'Russian');assert result['synthesisText']==text;assert result['warnings']
 
+
+def test_warning_language_is_english_while_russian_content_is_preserved():
+ result=prepare_speech_text('Код 2016.','Russian')
+ assert result['synthesisText']=='Код 2016.'
+ assert result['warnings']==['Check how to read “2016”: a date, code, range or abbreviation. Write it out in the Spoken text field if needed.']
+
+
+@pytest.mark.parametrize('text,language,message',[
+ ('x'*10001,'English','Text must contain no more than 10000 characters'),
+ ('Text','x','Invalid speech language'),
+])
+def test_validation_errors_are_english(text,language,message):
+ with pytest.raises(ValueError,match=message):prepare_speech_text(text,language)
+
 def test_manual_text_and_non_russian_are_preserved_offline(monkeypatch):
  def blocked(*_args,**_kwargs):raise AssertionError('Text preparation must be offline')
  monkeypatch.setattr(socket,'socket',blocked);monkeypatch.setattr(socket,'getaddrinfo',blocked)

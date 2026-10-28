@@ -3,13 +3,13 @@ import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
 export async function startDemo() {
-  const root = path.resolve('storage/demo');
+  const root = path.resolve(process.env.DEMO_ROOT || 'storage/demo-english');
   const data = JSON.parse(await fs.readFile(path.join(root, 'demo.json'), 'utf8'));
   const app = express();
 
   app.use((req, res, next) => {
     if (!['GET', 'HEAD'].includes(req.method)) {
-      res.status(403).json({ error: { code: 'DEMO_READ_ONLY', message: 'Демо доступно только для чтения' } });
+      res.status(403).json({ error: { code: 'DEMO_READ_ONLY', message: 'The demo is read-only' } });
 
       return;
     }

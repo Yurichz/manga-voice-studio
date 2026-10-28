@@ -68,11 +68,11 @@ export function inspectChapter(c: any) {
     issues.push({ field, message, ...(u ? { utteranceId: u.id, pageId: u.pageId } : {}) });
 
   if (!c.pages.length) {
-    issue('pages', 'Глава не содержит страниц');
+    issue('pages', 'The chapter contains no pages');
   }
 
   if (!render || render.inputRevision !== c.revision) {
-    issue('render', 'Сначала соберите актуальную главу');
+    issue('render', 'Render the current chapter first');
   }
 
   const segments = render?.manifest?.segments || [];
@@ -80,12 +80,12 @@ export function inspectChapter(c: any) {
   for (const p of c.pages) {
     for (const u of p.utterances) {
       if (!bboxSchema.safeParse(u.bbox).success) {
-        issue('bbox', 'Некорректная область', u);
+        issue('bbox', 'Invalid region', u);
       }
 
       if (u.included) {
         if (u.reviewStatus !== 'reviewed') {
-          issue('reviewStatus', 'Реплика не проверена', u);
+          issue('reviewStatus', 'The utterance has not been reviewed', u);
         }
 
         const s = segments.find((s: any) => s.utteranceId === u.id);
@@ -98,11 +98,11 @@ export function inspectChapter(c: any) {
           canonical(s.bbox) !== canonical(u.bbox) ||
           (u.activeAudioId && s.audioArtifactId !== u.activeAudioId)
         ) {
-          issue('audio', 'Нет актуального аудио реплики в сборке', u);
+          issue('audio', 'The render has no current audio for this utterance', u);
         }
 
         if (!u.voiceVersionId) {
-          issue('voice', 'Не закреплён голос', u);
+          issue('voice', 'No voice is pinned', u);
         }
       }
     }
@@ -126,8 +126,8 @@ function encode(exe: string, args: string[], signal?: AbortSignal) {
 
     child.stdout.resume();
     child.stderr.resume();
-    child.on('error', () => reject(new Error('FFmpeg недоступен. Установите ffmpeg-static или задайте FFMPEG_PATH')));
-    child.on('close', (code) => (code === 0 ? resolve() : reject(new Error('FFmpeg не смог подготовить MP3'))));
+    child.on('error', () => reject(new Error('FFmpeg is unavailable. Install ffmpeg-static or set FFMPEG_PATH')));
+    child.on('close', (code) => (code === 0 ? resolve() : reject(new Error('FFmpeg could not encode the MP3'))));
   });
 }
 export async function publicationFileHash(file: string) {
@@ -148,7 +148,7 @@ export async function exportPublication(
   const exe = process.env.FFMPEG_PATH || (ffmpeg as unknown as string | null);
 
   if (!exe) {
-    throw new Error('FFmpeg отсутствует: web-экспорт требует настоящего MP3');
+    throw new Error('FFmpeg is missing: publication export requires MP3 encoding');
   }
 
   const stage = output + '.' + randomUUID() + '.stage';
@@ -262,7 +262,7 @@ export async function exportPublication(
 
       await fs.rm(decoded);
       if (Math.abs(durationMs - c.render.manifest.durationMs) > 2) {
-        fail(c.id, 'Длительность MP3 после gapless-декодирования не совпадает с WAV');
+        fail(c.id, 'The gapless-decoded MP3 duration does not match the WAV');
       }
 
       const audio = await asset(mp3, 'audio', 'mp3', 'audio/mpeg'),
@@ -273,7 +273,7 @@ export async function exportPublication(
           checksum = await publicationFileHash(input);
 
         if (p.checksum && checksum !== p.checksum) {
-          fail(p.id, 'Файл страницы изменился после snapshot');
+          fail(p.id, 'The page file changed after the snapshot');
         }
 
         const imageFile = storage.resolve(snapshot.project.id + '/publication/cache/' + checksum + '-webp90-v1.webp');

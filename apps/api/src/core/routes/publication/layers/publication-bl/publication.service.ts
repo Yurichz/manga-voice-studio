@@ -35,7 +35,7 @@ export class PublicationService {
       });
       const j = await this.jobs.job(ownerId, p.id, 'publication_export', { snapshot }, idempotencySchema.parse(idempotencyKey));
 
-      return { jobId: j.id, snapshotNotice: 'Экспорт закреплён за выбранным snapshot. Последующие изменения не попадут в архив.' };
+      return { jobId: j.id, snapshotNotice: 'Export is pinned to the selected snapshot. Later changes will not be included.' };
     } catch (e) {
       if (e instanceof PublicationError) {
         throw new ApiError(422, e.field + ': ' + e.message);

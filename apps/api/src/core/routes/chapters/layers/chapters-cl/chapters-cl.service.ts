@@ -20,7 +20,7 @@ export class ChaptersClService {
     const c = await this.repository.updateChapterChapterFindUnique(chapterId);
 
     if (!c) {
-      throw new ApiError(404, 'Глава не найдена');
+      throw new ApiError(404, 'Chapter not found');
     }
 
     await this.access.project(ownerId, c.projectId);
@@ -31,7 +31,7 @@ export class ChaptersClService {
       const n = await this.repository.tx(tx).updateChapterChapterUpdateMany(c.id, v.expectedRevision, v.title, v.readingDirection);
 
       if (!n.count) {
-        throw new ApiError(409, 'Версия главы изменилась');
+        throw new ApiError(409, 'The chapter revision changed');
       }
 
       if (v.pageIds) {
@@ -42,7 +42,7 @@ export class ChaptersClService {
           new Set(v.pageIds).size !== pages.length ||
           v.pageIds.some((x) => !pages.some((p) => p.id === x))
         ) {
-          throw new ApiError(422, 'Некорректный порядок страниц');
+          throw new ApiError(422, 'Invalid page order');
         }
 
         for (const [order, pid] of v.pageIds.entries()) {

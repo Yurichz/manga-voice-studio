@@ -29,7 +29,7 @@ export class SpeechService {
     const u = await this.repository.pronunciationUtteranceFindUnique(utteranceId);
 
     if (!u) {
-      throw new ApiError(404, 'Реплика не найдена');
+      throw new ApiError(404, 'Utterance not found');
     }
 
     const p = await this.access.project(ownerId, u.projectId);
@@ -55,7 +55,7 @@ export class SpeechService {
     const c = await this.repository.speechChapterChapterFindUnique(chapterId);
 
     if (!c) {
-      throw new ApiError(404, 'Глава не найдена');
+      throw new ApiError(404, 'Chapter not found');
     }
 
     await this.access.project(ownerId, c.projectId);
@@ -99,7 +99,7 @@ export class SpeechService {
     const c = await this.repository.cancelChapterSpeechChapterFindUnique(chapterId);
 
     if (!c) {
-      throw new ApiError(404, 'Глава не найдена');
+      throw new ApiError(404, 'Chapter not found');
     }
 
     await this.access.project(ownerId, c.projectId);
@@ -121,7 +121,7 @@ export class SpeechService {
     const c = await this.repository.renderChapterChapterFindUnique(chapterId);
 
     if (!c) {
-      throw new ApiError(404, 'Глава не найдена');
+      throw new ApiError(404, 'Chapter not found');
     }
 
     await this.access.project(ownerId, c.projectId);

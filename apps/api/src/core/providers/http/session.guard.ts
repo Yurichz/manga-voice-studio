@@ -22,7 +22,7 @@ export class SessionGuard implements CanActivate {
     const session = await this.sessions.auth.api.getSession({ headers: fromNodeHeaders(request.headers) });
 
     if (!session) {
-      throw new ApiError(401, 'Требуется вход');
+      throw new ApiError(401, 'Sign-in required');
     }
 
     request.ownerId = session.user.id;
@@ -30,11 +30,11 @@ export class SessionGuard implements CanActivate {
 
     if (!read) {
       if (process.env.DEMO_MODE === 'true') {
-        throw new ApiError(403, 'Демо доступно только для чтения');
+        throw new ApiError(403, 'The demo is read-only');
       }
 
       if (request.get('Origin') !== new URL(process.env.BETTER_AUTH_URL || 'http://localhost:3000').origin) {
-        throw new ApiError(403, 'Недопустимый Origin');
+        throw new ApiError(403, 'Origin is not allowed');
       }
     }
 
@@ -45,7 +45,7 @@ export class SessionGuard implements CanActivate {
       this.quotas.set(key, { at: Date.now(), count: 1 });
     } else if (++quota.count > (read ? 600 : 180)) {
       response.setHeader('Retry-After', Math.ceil((60000 - (Date.now() - quota.at)) / 1000));
-      throw new ApiError(429, 'Слишком много запросов');
+      throw new ApiError(429, 'Too many requests');
     }
 
     // Bound the per-process quota map without changing its one-minute windows.

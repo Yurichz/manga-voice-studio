@@ -18,7 +18,7 @@ export function safeArchiveName(name: string, attributes: number) {
     name.split('/').includes('..') ||
     ((attributes >>> 16) & 0xf000) === 0xa000
   ) {
-    throw new Error('Небезопасный путь или symlink в архиве');
+    throw new Error('Unsafe archive path or symbolic link');
   }
 }
 export function isZip(b: Buffer) {
@@ -26,7 +26,7 @@ export function isZip(b: Buffer) {
 }
 export async function unpack(buffer: Buffer): Promise<{ name: string; data: Buffer }[]> {
   if (buffer.length > limits.totalBytes) {
-    throw new Error('Превышен размер импорта');
+    throw new Error('Import size limit exceeded');
   }
 
   return new Promise((resolve, reject) =>
@@ -57,11 +57,11 @@ export async function unpack(buffer: Buffer): Promise<{ name: string; data: Buff
         try {
           safeArchiveName(entry.fileName, entry.externalFileAttributes);
           if (++count > limits.entries) {
-            throw new Error('Слишком много элементов');
+            throw new Error('Too many archive entries');
           }
 
           if (entry.generalPurposeBitFlag & 1) {
-            throw new Error('Зашифрованные архивы не поддерживаются');
+            throw new Error('Encrypted archives are not supported');
           }
 
           if (/\/$/.test(entry.fileName)) {
@@ -71,7 +71,7 @@ export async function unpack(buffer: Buffer): Promise<{ name: string; data: Buff
           }
 
           if (!/\.(png|jpe?g|webp)$/i.test(entry.fileName)) {
-            throw new Error('Архив должен содержать только изображения PNG/JPEG/WebP');
+            throw new Error('Archives may contain only PNG/JPEG/WebP images');
           }
 
           total += entry.uncompressedSize;
@@ -80,7 +80,7 @@ export async function unpack(buffer: Buffer): Promise<{ name: string; data: Buff
             entry.uncompressedSize > limits.imageBytes ||
             entry.uncompressedSize / Math.max(entry.compressedSize, 1) > limits.ratio
           ) {
-            throw new Error('Превышены лимиты распаковки');
+            throw new Error('Archive extraction limits exceeded');
           }
 
           zip.openReadStream(entry, (e, stream) => {
@@ -95,7 +95,7 @@ export async function unpack(buffer: Buffer): Promise<{ name: string; data: Buff
               size += b.length;
               if (size > limits.imageBytes) {
                 stream.destroy();
-                fail(new Error('Превышен размер изображения'));
+                fail(new Error('Image size limit exceeded'));
               } else {
                 chunks.push(b);
               }
@@ -105,7 +105,7 @@ export async function unpack(buffer: Buffer): Promise<{ name: string; data: Buff
               if (!failed) {
                 files.push({ name: entry.fileName, data: Buffer.concat(chunks) });
                 if (files.length > limits.pages) {
-                  return fail(new Error('Максимум 50 страниц'));
+                  return fail(new Error('A maximum of 50 pages is allowed'));
                 }
 
                 zip.readEntry();
@@ -122,14 +122,14 @@ export async function unpack(buffer: Buffer): Promise<{ name: string; data: Buff
 }
 export async function normalize(data: Buffer) {
   if (data.length > limits.imageBytes) {
-    throw new Error('Изображение превышает 20 MiB');
+    throw new Error('The image exceeds 20 MiB');
   }
 
   const image = sharp(data, { limitInputPixels: limits.pixels, failOn: 'warning' });
   const m = await image.metadata();
 
   if (!['png', 'jpeg', 'webp'].includes(m.format || '')) {
-    throw new Error('Неподдерживаемый формат изображения');
+    throw new Error('Unsupported image format');
   }
 
   const { data: canonical, info } = await image.rotate().png().toBuffer({ resolveWithObject: true });

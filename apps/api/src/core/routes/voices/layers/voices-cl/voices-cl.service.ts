@@ -20,7 +20,7 @@ export class VoicesClService {
     const voice = await this.repository.applyVoiceVoiceProfileVersionFindUnique(voiceVersionId);
 
     if (!voice) {
-      throw new ApiError(404, 'Голос не найден');
+      throw new ApiError(404, 'Voice not found');
     }
 
     await this.access.project(ownerId, voice.projectId);
@@ -31,7 +31,7 @@ export class VoicesClService {
         const n = await this.repository.tx(tx).applyVoiceUtteranceUpdateMany(u.id, voice.projectId, u.expectedRevision, voice.id);
 
         if (!n.count) {
-          throw new ApiError(409, 'Реплика изменилась');
+          throw new ApiError(409, 'The utterance changed');
         }
       }
 
@@ -55,12 +55,12 @@ export class VoicesClService {
     const j = await this.repository.saveVoiceJobFindUnique(jobId);
 
     if (!j || j.ownerId !== ownerId) {
-      throw new ApiError(404, 'Задание не найдено');
+      throw new ApiError(404, 'Job not found');
     }
 
     await this.access.project(j.ownerId, j.projectId);
     if (j.kind !== 'voice_design' || j.status !== 'succeeded' || !j.result) {
-      throw new ApiError(422, 'Нет готового голоса');
+      throw new ApiError(422, 'No completed voice is available');
     }
 
     const input = j.input as any,
@@ -68,7 +68,7 @@ export class VoicesClService {
     const profileId = uuid.optional().parse(body.profileId);
 
     if (profileId && !(await this.repository.saveVoiceVoiceProfileFindFirst(profileId, j.projectId))) {
-      throw new ApiError(404, 'Профиль не найден');
+      throw new ApiError(404, 'Profile not found');
     }
 
     const v = await this.prisma.$txe(async (tx) => {

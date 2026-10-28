@@ -1,6 +1,6 @@
 # Installation and operations
 
-Commands below run from the cloned repository root in Windows PowerShell. Other platforms are not verified. The repository contains source, schema migrations and an installable publication-contract artifact. Model weights, recordings, pages, credentials and local verification reports are not distributed.
+Commands below run from the cloned repository root in Windows PowerShell. Other platforms are not verified. The repository contains source, schema migrations, an installable publication-contract artifact and the supplied demonstration illustration. Model weights, recordings, user pages, credentials and local verification reports are not distributed.
 
 ## Prerequisites
 
@@ -59,6 +59,7 @@ The field names and placeholder values are in [../.env.example](../.env.example)
 | STORAGE_ROOT | Private local files; normally ./storage/private |
 | MODEL_ROOT | Model location setting; the current registry/downloader uses the repository's models directory |
 | DEMO_MODE | Enables the separate read-only demo entrypoint |
+| DEMO_ROOT | Whitelisted demo directory; default ./storage/demo-english |
 
 Changing API/AI ports also requires updating the corresponding frontend proxy or launcher settings; `API_PORT` alone does not reconfigure every service. Restart after changing environment values. Keep database and file backups together.
 
@@ -90,14 +91,14 @@ Create the empty target database separately. Do not apply application migrations
 
 ## Demo
 
-The demo uses only whitelisted files in `storage/demo` and refuses writes without connecting to private services. Its generated media are not part of the repository. After a successful real GPU smoke run, prepare it with:
+The English demo uses only whitelisted files in `DEMO_ROOT` (default `storage/demo-english`) and refuses writes without connecting to private services. Its generated media are not part of the repository. Install the pinned current models/runtimes, then generate its synthetic voice, four utterances and sample-based chapter track:
 
 ```powershell
-.runtime\ai\Scripts\python.exe scripts/prepare_demo.py
+.runtime\ai\Scripts\python.exe scripts/prepare_english_demo.py
 .\scripts\demo.ps1
 ```
 
-Run `pnpm dev:web` in a second terminal. Prepare fixtures through the steps in [../CONTRIBUTING.md](../CONTRIBUTING.md) first.
+Run `pnpm dev:web` in a second terminal. The generator starts and stops its own isolated AI supervisor, resumes verified cached results and never opens the user database or queue. `--regenerate` creates a new voice. Viewing the finished demo needs only the demo API and frontend. The historical Russian `storage/demo` fixtures are retained for regression tests.
 
 ## Troubleshooting
 

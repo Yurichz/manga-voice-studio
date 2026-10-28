@@ -24,20 +24,20 @@ export class SpeechClService {
     const artifact = await this.repository.selectAudioAudioArtifactFindFirst(v.artifactId, s.projectId, ownerId);
 
     if (!artifact) {
-      throw new ApiError(404, 'Дубль не найден');
+      throw new ApiError(404, 'Take not found');
     }
 
     const canonical = baseSpeechInput((artifact.snapshot as any).canonical);
 
     if (inputHash(canonical) !== inputHash(s.canonical)) {
-      throw new ApiError(422, 'Дубль не соответствует текущему тексту и голосу');
+      throw new ApiError(422, 'The take does not match the current text and voice');
     }
 
     await this.prisma.$txe(async (tx) => {
       const n = await this.repository.tx(tx).selectAudioUtteranceUpdateMany(s.utteranceId, s.projectId, v.expectedRevision, artifact.id);
 
       if (!n.count || s.utteranceRevision !== v.expectedRevision) {
-        throw new ApiError(409, 'Реплика изменилась');
+        throw new ApiError(409, 'The utterance changed');
       }
 
       const p = await this.repository.tx(tx).selectAudioPageUpdate(s.pageId);

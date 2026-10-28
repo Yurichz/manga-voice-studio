@@ -21,7 +21,7 @@ export async function prepareSpeechTexts(texts: string[], language: string) {
       const body = await response.json().catch(() => null);
 
       throw Object.assign(
-        new Error(typeof body?.detail === 'string' ? body.detail : 'Подготовка текста недоступна. Проверьте AI-сервис.'),
+        new Error(typeof body?.detail === 'string' ? body.detail : 'Text preparation is unavailable. Check the AI service.'),
         { status: response.status },
       );
     }

@@ -60,8 +60,8 @@ model Project {
   ownerId String
   owner User @relation(fields:[ownerId],references:[id],onDelete:Cascade)
   title String
-  textLanguage String @default("ru")
-  speechLanguage String @default("Russian")
+  textLanguage String @default("en")
+  speechLanguage String @default("English")
   readingDirection String @default("rtl")
   revision Int @default(0)
   deletedAt DateTime?

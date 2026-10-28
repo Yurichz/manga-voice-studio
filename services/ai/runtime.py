@@ -150,11 +150,11 @@ class PageAnalysisProvider:
     data=parse_analysis(text);return {'proposal':data,'modelRevision':registry['vision']['revision'],'promptVersion':'page-v3-qwen-grounding'}
    except (ValueError,KeyError,TypeError) as error:
     reason=str(error)
-    if out.shape[1]-inputs.input_ids.shape[1]>=6144:reason='Ответ обрезан по лимиту длины; '+reason
+    if out.shape[1]-inputs.input_ids.shape[1]>=6144:reason='The response reached the length limit; '+reason
     if PROGRESS_PATH is not None:
      PROGRESS_PATH.with_suffix('.vision-'+str(attempt)+'.json').write_text(json.dumps({'response':text,'validationError':reason,'outputTokens':int(out.shape[1]-inputs.input_ids.shape[1]),'imageKey':v['imageKey'],'promptVersion':'page-v3-qwen-grounding'},ensure_ascii=False),encoding='utf-8')
     messages.extend([{'role':'assistant','content':[{'type':'text','text':text}]},{'role':'user','content':[{'type':'text','text':'Your previous JSON failed validation: '+reason+'. Correct it using the same image and schema. Return the complete JSON only, with bbox_2d corner coordinates on 0..1000. Omit uncertain regions rather than inventing boxes.'}]}])
-  raise ValueError('Не удалось проверить разметку страницы после повторной попытки: '+reason[:350]+'. Повторите анализ или разметьте страницу вручную.')
+  raise ValueError('Page annotations could not be validated after retrying: '+reason[:350]+'. Retry the analysis or annotate the page manually.')
 
 def parse_analysis(text):
  data=json.loads(re.sub(r'^```(?:json)?\s*|\s*```$','',text.strip()))
@@ -186,9 +186,9 @@ def validate_voice_instruction(text,description=''):
  if not 1<=len(text)<=1200 or re.search(r'[\u0400-\u04ff\u4e00-\u9fff]',text) or not re.search(r'[a-zA-Z]',text):raise ValueError('Voice instruction must be concise English text')
  male=bool(re.search(r'мужск\w*|\bmale\b|\bman\b',description,re.I));female=bool(re.search(r'женск\w*|\bfemale\b|\bwoman\b',description,re.I))
  if male!=female:
-  if male and (not re.search(r'\bmale\b|\bman\b',text,re.I) or re.search(r'\bfemale\b|\bwoman\b',text,re.I)):raise ValueError('Подготовленная инструкция потеряла мужской голос. Повторите задание.')
-  if female and (not re.search(r'\bfemale\b|\bwoman\b',text,re.I) or re.search(r'\bmale\b|\bman\b',text,re.I)):raise ValueError('Подготовленная инструкция потеряла женский голос. Повторите задание.')
- if re.search(r'низк\w*|\blow\b|\bdeep\b',description,re.I) and not re.search(r'\blow\b|\bdeep\b|\bbass\b|\bbaritone\b',text,re.I):raise ValueError('Подготовленная инструкция потеряла низкий регистр. Повторите задание.')
+  if male and (not re.search(r'\bmale\b|\bman\b',text,re.I) or re.search(r'\bfemale\b|\bwoman\b',text,re.I)):raise ValueError('The prepared instruction lost the male voice requirement. Retry the job.')
+  if female and (not re.search(r'\bfemale\b|\bwoman\b',text,re.I) or re.search(r'\bmale\b|\bman\b',text,re.I)):raise ValueError('The prepared instruction lost the female voice requirement. Retry the job.')
+ if re.search(r'низк\w*|\blow\b|\bdeep\b',description,re.I) and not re.search(r'\blow\b|\bdeep\b|\bbass\b|\bbaritone\b',text,re.I):raise ValueError('The prepared instruction lost the low register requirement. Retry the job.')
  return text
 
 def prepare_voice_instruction(v):
@@ -216,7 +216,7 @@ def validate_analysis(data):
    if key=='utterances' and (item.get('kind') not in ['dialogue','thought','narration','sfx'] or not isinstance(item.get('text'),str) or len(item['text'])>10000 or type(item.get('needsReview')) is not bool):raise ValueError(location+': invalid utterance schema')
    if key=='characters' and (not isinstance(item.get('description'),str) or len(item['description'])>1000):raise ValueError(location+': invalid character schema')
 def render(v):
- if not v['segments']:raise ValueError('Нет включённых реплик для сборки')
+ if not v['segments']:raise ValueError('No included utterances to render')
  pieces=[];timeline=[];cursor=0
  report('assembling',0,len(v['segments']),'segments')
  for i,s in enumerate(v['segments']):
@@ -237,7 +237,7 @@ def execute(task):
    torch.manual_seed(v['seed']);torch.cuda.manual_seed_all(v['seed'])
   provider=VoxSpeechProvider(model_key) if model_key==kind else QwenSpeechProvider(model_key)
   wavs,sr=provider.speech(v) if kind=='speech' else provider.design(v)
-  if kind=='design' and not 2<=len(wavs[0])/sr<=30:raise ValueError('Референс голоса должен длиться 2–30 секунд. Сократите текст референса или повторите генерацию.')
+  if kind=='design' and not 2<=len(wavs[0])/sr<=30:raise ValueError('The voice reference must be 2–30 seconds long. Shorten its transcript or generate it again.')
   report('writing_audio');source=write_audio(wavs[0],sr,v['projectId']);result=write_audio(normalize_audio(wavs[0],sr),24000,v['projectId']);result.update(sourceKey=source['fileKey'],sourceSampleRate=sr,sourceSampleCount=source['sampleCount'],modelId=registry[model_key]['id'],modelRevision=registry[model_key]['revision'])
   if model_key==kind:
    metadata=v['canonical'] if kind=='speech' else v

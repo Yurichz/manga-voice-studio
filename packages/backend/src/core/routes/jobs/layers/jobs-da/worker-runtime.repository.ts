@@ -14,7 +14,7 @@ export class WorkerRuntimeRepository extends TxScopeRepository {
   maintenanceJobUpdateMany(value1: string, value2: string | null) {
     return this.$.job.updateMany({
       where: { id: value1, status: 'running', attemptToken: value2 },
-      data: { status: 'failed', stage: 'failed', error: 'Воркер перестал отвечать. Повторите задание.', attemptToken: null },
+      data: { status: 'failed', stage: 'failed', error: 'The worker stopped responding. Retry this job.', attemptToken: null },
     });
   }
 

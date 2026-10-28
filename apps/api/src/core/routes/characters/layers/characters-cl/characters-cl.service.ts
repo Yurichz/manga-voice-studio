@@ -20,7 +20,7 @@ export class CharactersClService {
     const c = await this.repository.updateCharacterCharacterFindUnique(characterId);
 
     if (!c) {
-      throw new ApiError(404, 'Персонаж не найден');
+      throw new ApiError(404, 'Character not found');
     }
 
     await this.access.project(ownerId, c.projectId);
@@ -30,7 +30,7 @@ export class CharactersClService {
       v.defaultVoiceVersionId &&
       !(await this.repository.updateCharacterVoiceProfileVersionFindFirst(v.defaultVoiceVersionId, c.projectId))
     ) {
-      throw new ApiError(422, 'Голос другого проекта');
+      throw new ApiError(422, 'The voice belongs to another project');
     }
 
     const { expectedRevision, ...data } = v;
@@ -39,7 +39,7 @@ export class CharactersClService {
       const n = await this.repository.tx(tx).updateCharacterCharacterUpdateMany(c.id, expectedRevision, data);
 
       if (!n.count) {
-        throw new ApiError(409, 'Версия персонажа изменилась');
+        throw new ApiError(409, 'The character revision changed');
       }
 
       if (data.name !== undefined && data.name !== c.name) {
@@ -54,7 +54,7 @@ export class CharactersClService {
     const source = await this.repository.mergeCharacterCharacterFindUnique(characterId);
 
     if (!source) {
-      throw new ApiError(404, 'Персонаж не найден');
+      throw new ApiError(404, 'Character not found');
     }
 
     await this.access.project(ownerId, source.projectId);
@@ -62,11 +62,11 @@ export class CharactersClService {
     const target = await this.repository.mergeCharacterCharacterFindFirst(v.targetId, source.projectId);
 
     if (!target || target.id === source.id) {
-      throw new ApiError(422, 'Выберите другую основную карточку этого проекта');
+      throw new ApiError(422, 'Select a different primary character in this project');
     }
 
     if (v.voiceVersionId && !(await this.repository.mergeCharacterVoiceProfileVersionFindFirst(v.voiceVersionId, source.projectId))) {
-      throw new ApiError(422, 'Голос другого проекта');
+      throw new ApiError(422, 'The voice belongs to another project');
     }
 
     const merge = await this.prisma.$txe(async (tx) => {
@@ -74,7 +74,7 @@ export class CharactersClService {
       const b = await this.repository.tx(tx).mergeCharacterCharacterUpdateMany2(target.id, v.targetRevision, v.voiceVersionId);
 
       if (!a.count || !b.count) {
-        throw new ApiError(409, 'Карточки изменились');
+        throw new ApiError(409, 'The characters changed');
       }
 
       const assignments = await this.repository.tx(tx).mergeCharacterUtteranceFindMany(source.id);
@@ -106,12 +106,12 @@ export class CharactersClService {
     const m = await this.repository.undoMergeCharacterMergeFindUnique(mergeId);
 
     if (!m) {
-      throw new ApiError(404, 'История не найдена');
+      throw new ApiError(404, 'History not found');
     }
 
     await this.access.project(ownerId, m.projectId);
     if (m.status !== 'applied') {
-      throw new ApiError(409, 'Объединение уже отменено');
+      throw new ApiError(409, 'The merge has already been undone');
     }
 
     const before = m.before as any,
@@ -122,7 +122,7 @@ export class CharactersClService {
       const claim = await this.repository.tx(tx).undoMergeCharacterMergeUpdateMany(m.id);
 
       if (!claim.count) {
-        throw new ApiError(409, 'Объединение уже отменено');
+        throw new ApiError(409, 'The merge has already been undone');
       }
 
       for (const a of assignments) {

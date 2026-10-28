@@ -38,7 +38,7 @@ export class JobPublicationClService {
         const existing = await this.repository.tx(tx).publishPageCount(v.chapterId);
 
         if (existing + extra.length > limits.pages) {
-          throw new UnrecoverableError('Максимум 50 страниц');
+          throw new UnrecoverableError('A maximum of 50 pages is allowed');
         }
 
         await this.repository.tx(tx).publishPageCreateMany(extra.map((p: any, i: number) => ({ ...p, order: existing + i })));
@@ -49,7 +49,7 @@ export class JobPublicationClService {
         const page = await this.repository.tx(tx).publishPageFindFirst(v.pageId, j.projectId);
 
         if (!page || page.revision !== v.inputRevision) {
-          throw new UnrecoverableError('Страница изменилась');
+          throw new UnrecoverableError('The page changed');
         }
 
         await this.repository.tx(tx).publishUtteranceDeleteMany(page.id);

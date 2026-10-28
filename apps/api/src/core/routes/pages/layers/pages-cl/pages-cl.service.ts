@@ -27,7 +27,7 @@ export class PagesClService {
       const n = await this.repository.tx(tx).updatePagePageUpdateMany(p.id, v.expectedRevision);
 
       if (!n.count) {
-        throw new ApiError(409, 'Страница изменена в другом окне. Черновик сохранён локально.');
+        throw new ApiError(409, 'The page changed in another window. Your draft was saved locally.');
       }
 
       const chars = await this.repository.tx(tx).updatePageCharacterFindMany(p.projectId),
@@ -38,7 +38,7 @@ export class PagesClService {
           (u.characterId && !chars.some((c) => c.id === u.characterId)) ||
           (u.voiceVersionId && !voices.some((x) => x.id === u.voiceVersionId))
         ) {
-          throw new ApiError(422, 'Персонаж или голос другого проекта');
+          throw new ApiError(422, 'The character or voice belongs to another project');
         }
       }
 
@@ -52,7 +52,7 @@ export class PagesClService {
       );
 
       if (foreign || foreignPanels) {
-        throw new ApiError(422, 'Идентификатор принадлежит другой странице');
+        throw new ApiError(422, 'The identifier belongs to another page');
       }
 
       await this.repository.tx(tx).updatePageUtteranceDeleteMany(

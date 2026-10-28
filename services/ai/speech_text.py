@@ -16,8 +16,8 @@ def sentence_case(text):
  return text
 
 def prepare_speech_text(text,language):
- if not isinstance(text,str) or len(text)>10000:raise ValueError('Текст должен содержать не более 10000 символов')
- if not isinstance(language,str) or not 2<=len(language)<=30:raise ValueError('Некорректный язык речи')
+ if not isinstance(text,str) or len(text)>10000:raise ValueError('Text must contain no more than 10000 characters')
+ if not isinstance(language,str) or not 2<=len(language)<=30:raise ValueError('Invalid speech language')
  warnings=[]
  if language.lower() not in ['ru','russian']:
   return {'synthesisText':text,'textPreparationVersion':VERSION,'warnings':warnings}
@@ -36,7 +36,7 @@ def prepare_speech_text(text,language):
   # A separated range/sign, fraction or version must not lose its separator semantics.
   ambiguous=ambiguous or bool(re.search(r'\d\s*[-–—/:+]\s*$',before) or re.match(r'\s*[-–—/:+]\s*\d',after))
   if ambiguous:
-   warnings.append(f'Проверьте чтение «{token}»: дата, код, диапазон или сокращение. При необходимости запишите словами в поле «Произносимый текст».')
+   warnings.append(f'Check how to read “{token}”: a date, code, range or abbreviation. Write it out in the Spoken text field if needed.')
    return token
   try:
    value=token.replace('−','-').replace(',','.')
@@ -45,7 +45,7 @@ def prepare_speech_text(text,language):
     if year[1].lower()=='году' and re.search(r'\bк\s*$',before,re.I):case='dative'
     words=num2words(int(value),lang='ru',to='ordinal',case=case)
    elif '.' in value:
-    if len(value.split('.')[1])>6:raise ValueError('Слишком много десятичных знаков')
+    if len(value.split('.')[1])>6:raise ValueError('Too many decimal places')
     words=num2words(Decimal(value),lang='ru')
    else:
     # Explicit, common inflections; other grammatical contexts remain user-editable.
@@ -53,16 +53,16 @@ def prepare_speech_text(text,language):
     if re.search(r'\b(?:из|от|до|без|около|после|больше|меньше)\s*$',before,re.I):case='genitive'
     elif re.search(r'\bк\s*$',before,re.I):case='dative'
     elif re.search(r'\b(?:с|между)\s*$',before,re.I):
-     warnings.append(f'Проверьте падеж числа «{token}» после предлога; при необходимости запишите его словами.')
+     warnings.append(f'Check the grammatical case of “{token}” after the preposition; write it out if needed.')
      return token
     gender='feminine' if re.match(r'\s+(?:секунд[аыу]?|минут[аыу]?|книг[аиу]?|страниц[аыу]?)\b',after,re.I) else 'masculine'
     words=num2words(int(value),lang='ru',case=case,gender=gender)
    return words[0].upper()+words[1:] if not before.strip() or re.search(r'[.!?…]\s*$',before) else words
   except (ValueError,OverflowError,NotImplementedError):
-   warnings.append(f'Проверьте чтение числа «{token}» и при необходимости запишите его словами.')
+   warnings.append(f'Check how to read “{token}” and write it out if needed.')
    return token
  result=NUMBER.sub(replace,text)
- if re.search(r'\d',result) and not warnings:warnings.append('В тексте остались цифры внутри слова или кода: проверьте произношение.')
- if '\u0301' in result or re.search(r'[А-Яа-яЁё]\+[А-Яа-яЁё]',result):warnings.append('Управление ударением пометками в VoxCPM2 пока не подтверждено прослушиванием.')
- if len(result)>10000:raise ValueError('После раскрытия чисел текст превышает 10000 символов. Разделите реплику.')
+ if re.search(r'\d',result) and not warnings:warnings.append('Digits remain inside a word or code: check the pronunciation.')
+ if '\u0301' in result or re.search(r'[А-Яа-яЁё]\+[А-Яа-яЁё]',result):warnings.append('VoxCPM2 stress control using annotations has not yet been verified by listening.')
+ if len(result)>10000:raise ValueError('Expanding numbers exceeds 10000 characters. Split the utterance.')
  return {'synthesisText':result,'textPreparationVersion':VERSION,'warnings':list(dict.fromkeys(warnings))}

@@ -11,6 +11,8 @@
 
 ## Verification on 2026-10-28
 
+These are the initial publication checks. The later English interface/defaults/demo change has a separate [verification report](english-ui.md), including explicit skipped checks.
+
 The following checks passed on Windows with RTX 4090 / 24 GB VRAM, Node.js 26.3.1, pnpm 11.25.0 and project-local Python environments:
 
 | Check | Result |
@@ -34,6 +36,8 @@ README/install/model/architecture/contribution documents are prepared for a fres
 CI runs the same JavaScript checks on Windows without GPU inference. Its current result is visible in the [GitHub Actions workflow](https://github.com/Yurichz/manga-voice-studio/actions/workflows/ci.yml). Real integration tests remain explicitly opt-in; the ordinary run reports 28 skipped cases rather than claiming to have exercised unavailable models/services.
 
 ## Validation boundaries
+
+The later English interface/defaults/demo update on 2026-10-28 passed 19 unit tests, 59 Python tests, 21 isolated integration cases, 12 editor browser scenarios and 2 English demo scenarios, plus lint, TypeScript, architecture, build and publication-contract checks. A new real local English voice, four utterances and chapter timeline were generated. The English demo also exported a validated publication. The [English update report](english-ui.md) records the preserved Russian data behavior and the GPU/restart cases not repeated in this run.
 
 Other operating systems/GPUs, a separate clean Windows OS installation, physical host-network disconnection, the two full launcher-driven browser GPU/restart cases, a new physical worker-crash recovery run and independent listening/recognition-quality assessment were not repeated for the Nest migration.
 

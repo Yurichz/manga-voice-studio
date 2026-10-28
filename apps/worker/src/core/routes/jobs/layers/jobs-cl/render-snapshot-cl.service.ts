@@ -19,7 +19,7 @@ export class RenderSnapshotClService {
     const before = await this.repository.snapshotRenderChapterFindUnique(j.input.chapterId);
 
     if (!before || before.projectId !== j.projectId || before.revision !== j.input.inputRevision) {
-      throw new UnrecoverableError('Глава изменилась до начала сборки');
+      throw new UnrecoverableError('The chapter changed before rendering started');
     }
 
     const utterances = before.pages.flatMap((p) => p.utterances),
@@ -34,13 +34,13 @@ export class RenderSnapshotClService {
         const c = await this.repository.tx(tx).snapshotRenderChapterFindUnique2(j.input.chapterId);
 
         if (!c || c.projectId !== j.projectId || c.revision !== j.input.inputRevision) {
-          throw new UnrecoverableError('Глава изменилась до начала сборки');
+          throw new UnrecoverableError('The chapter changed before rendering started');
         }
 
         const p = await this.repository.tx(tx).snapshotRenderProjectFindUniqueOrThrow(j.projectId);
 
         if (p.speechLanguage !== before.project.speechLanguage) {
-          throw new UnrecoverableError('Язык речи изменился');
+          throw new UnrecoverableError('The speech language changed');
         }
 
         const segments = [];
@@ -48,13 +48,13 @@ export class RenderSnapshotClService {
         for (const page of c.pages) {
           for (const utterance of page.utterances.filter((u) => u.included)) {
             if (utterance.reviewStatus !== 'reviewed' || !utterance.voiceVersionId) {
-              throw new UnrecoverableError('Все включённые реплики должны быть проверены и иметь голос');
+              throw new UnrecoverableError('All included utterances must be reviewed and have a voice');
             }
 
             const text = texts.get(utterance.id);
 
             if (!text || text.source !== utterance.spokenText) {
-              throw new UnrecoverableError('Текст реплики изменился');
+              throw new UnrecoverableError('The utterance text changed');
             }
 
             const voice = await this.repository.tx(tx).snapshotRenderVoiceProfileVersionFindFirstOrThrow(utterance.voiceVersionId, p.id);
@@ -65,14 +65,14 @@ export class RenderSnapshotClService {
               : await this.repository.tx(tx).snapshotRenderAudioArtifactFindUnique(p.id, hash);
 
             if (!artifact) {
-              throw new UnrecoverableError('Не всё актуальное аудио готово');
+              throw new UnrecoverableError('Some current audio is not ready');
             }
 
             const actual = (artifact.snapshot as any).canonical;
             const base = baseSpeechInput(actual);
 
             if (inputHash(base) !== hash) {
-              throw new UnrecoverableError('Аудио устарело');
+              throw new UnrecoverableError('The audio is stale');
             }
 
             const character = utterance.characterId

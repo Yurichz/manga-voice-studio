@@ -24,7 +24,7 @@ async function docker(args:string[]){return run('docker',['compose','exec','-T',
 async function main(){
  const email=randomUUID()+'@mvs-test.invalid',password=randomBytes(24).toString('base64url');
  const account=await makeAuth(true).api.signUpEmail({body:{email,password,name:'Backup verification'}});userId=account.user.id;
- const p=await db.project.create({data:{ownerId:userId,title:'Backup verification '+token}});projectId=p.id;
+ const p=await db.project.create({data:{textLanguage:'ru',speechLanguage:'Russian',ownerId:userId,title:'Backup verification '+token}});projectId=p.id;
  const chapter=await db.chapter.create({data:{projectId,title:'Сохранённая глава',order:0}});
  const image=await fs.readFile('work/fixtures/chapter-1.png'),wav=await fs.readFile('outputs/gpu-smoke/reference.wav');
  const imageKey=projectId+'/pages/backup.png',referenceKey=projectId+'/voices/backup.wav';await storage.write(imageKey,image);await storage.write(referenceKey,wav);

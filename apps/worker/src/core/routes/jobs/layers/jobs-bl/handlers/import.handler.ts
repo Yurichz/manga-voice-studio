@@ -31,13 +31,13 @@ export class ImportHandler implements JobHandler {
 
     files.sort((a, b) => a.name.localeCompare(b.name, 'en', { numeric: true }));
     if (files.length > limits.pages || files.reduce((n, f) => n + f.data.length, 0) > limits.totalBytes) {
-      throw new UnrecoverableError('Превышены лимиты импорта');
+      throw new UnrecoverableError('Import limits exceeded');
     }
 
     const existing = await this.repository.handlePageCount(v.chapterId);
 
     if (existing + files.length > limits.pages) {
-      throw new UnrecoverableError('В главе максимум 50 страниц');
+      throw new UnrecoverableError('A chapter may contain at most 50 pages');
     }
 
     const extra = [];

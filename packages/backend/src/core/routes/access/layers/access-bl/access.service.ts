@@ -13,7 +13,7 @@ export class AccessService {
     const p = await this.repository.projectProjectFindFirst(projectId, ownerId);
 
     if (!p) {
-      throw new ApiError(404, 'Проект не найден');
+      throw new ApiError(404, 'Project not found');
     }
 
     return p;
@@ -23,7 +23,7 @@ export class AccessService {
     const p = await this.repository.pagePageFindUnique(pageId);
 
     if (!p) {
-      throw new ApiError(404, 'Страница не найдена');
+      throw new ApiError(404, 'Page not found');
     }
 
     await this.project(ownerId, p.projectId);

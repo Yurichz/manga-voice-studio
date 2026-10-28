@@ -85,7 +85,7 @@ export class JobsService {
     const j = await this.repository.getJobJobFindUnique(jobId);
 
     if (!j || j.ownerId !== ownerId) {
-      throw new ApiError(404, 'Задание не найдено');
+      throw new ApiError(404, 'Job not found');
     }
 
     await this.access.project(j.ownerId, j.projectId);
@@ -97,7 +97,7 @@ export class JobsService {
     const j = await this.repository.cancelJobJobFindUnique(jobId);
 
     if (!j || j.ownerId !== ownerId) {
-      throw new ApiError(404, 'Задание не найдено');
+      throw new ApiError(404, 'Job not found');
     }
 
     await this.access.project(j.ownerId, j.projectId);
@@ -110,12 +110,12 @@ export class JobsService {
     const j = await this.repository.retryJobJobFindUnique(jobId);
 
     if (!j || j.ownerId !== ownerId) {
-      throw new ApiError(404, 'Задание не найдено');
+      throw new ApiError(404, 'Job not found');
     }
 
     await this.access.project(j.ownerId, j.projectId);
     if (!['failed', 'blocked', 'cancelled'].includes(j.status)) {
-      throw new ApiError(422, 'Повтор недоступен');
+      throw new ApiError(422, 'Retry is unavailable');
     }
 
     const fresh = (

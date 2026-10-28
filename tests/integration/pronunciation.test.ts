@@ -16,7 +16,7 @@ describe.skipIf(process.env.MVS_RUN_INTEGRATION!=='true')('Russian pronunciation
  beforeAll(async()=>{
   async function account(){const email=randomUUID()+'@mvs-test.invalid',password=randomBytes(24).toString('base64url');const a=await makeAuth(true).api.signUpEmail({body:{name:'Pronunciation fixture',email,password}});const response=await fetch(origin+'/api/auth/sign-in/email',{method:'POST',headers:{Origin:origin,'Content-Type':'application/json'},body:JSON.stringify({email,password})});expect(response.status).toBe(200);return {id:a.user.id,cookie:response.headers.getSetCookie().map(c=>c.split(';')[0]).join('; ')};}
   const a=await account(),b=await account();owner=a.id;cookie=a.cookie;other=b.id;foreignCookie=b.cookie;
-  projectId=(await db.project.create({data:{ownerId:owner,title:'Pronunciation regression'}})).id;
+  projectId=(await db.project.create({data:{textLanguage:'ru',speechLanguage:'Russian',ownerId:owner,title:'Pronunciation regression'}})).id;
   chapterId=(await db.chapter.create({data:{projectId,title:'Numbers',order:0}})).id;
   pageId=(await db.page.create({data:{projectId,chapterId,order:0,name:'Owned fixture',width:800,height:1000,imageKey:projectId+'/test.png',previewKey:projectId+'/test.png',sourceKey:projectId+'/test.png',checksum:'fixture',transform:{}}})).id;
   const reference=await fs.readFile('outputs/voice-description/default-settings/prepared-2026.wav'),referenceKey=projectId+'/reference.wav';await storage.write(referenceKey,reference);

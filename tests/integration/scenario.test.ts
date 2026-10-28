@@ -27,8 +27,8 @@ describe.skipIf(!enabled)('real PostgreSQL/Redis/API integration — explicitly 
   await db.$queryRaw`SELECT 1`;
   async function account(){const email=randomUUID()+'@mvs-test.invalid',password=randomBytes(24).toString('base64url');const created=await makeAuth(true).api.signUpEmail({body:{name:'Integration fixture',email,password}});const r=await fetch(origin+'/api/auth/sign-in/email',{method:'POST',headers:{Origin:origin,'Content-Type':'application/json'},body:JSON.stringify({email,password})});expect(r.status).toBe(200);return {id:created.user.id,cookie:r.headers.getSetCookie().map(x=>x.split(';')[0]).join('; ')};}
   const a=await account(),b=await account();user1=a.id;user2=b.id;cookie1=a.cookie;cookie2=b.cookie;
-  p1=await ok('/projects','POST',{title:'Integration 1',ownerId:user2});projectIds.push(p1.id);expect(p1.ownerId).toBe(user1);
-  const r=await request(cookie2,'/projects','POST',{title:'Integration 2'});expect(r.status).toBe(201);p2=r.data;projectIds.push(p2.id);
+  p1=await ok('/projects','POST',{title:'Integration 1',textLanguage:'ru',speechLanguage:'Russian',ownerId:user2});projectIds.push(p1.id);expect(p1.ownerId).toBe(user1);
+  const r=await request(cookie2,'/projects','POST',{title:'Integration 2',textLanguage:'ru',speechLanguage:'Russian'});expect(r.status).toBe(201);p2=r.data;projectIds.push(p2.id);
   c1=await ok('/projects/'+p1.id+'/chapters','POST',{title:'Chapter 1'});
   const form=new FormData();const png=await fs.readFile('work/fixtures/chapter-1.png');form.append('files',new Blob([new Uint8Array(png)]),'1.png');const j=await ok('/chapters/'+c1.id+'/import','POST',form);await finished(j.jobId);page=(await ok('/chapters/'+c1.id)).pages[0];page=await ok('/pages/'+page.id);character=await ok('/projects/'+p1.id+'/characters','POST',{name:'Fixture hero'});
  },90000);
@@ -134,7 +134,7 @@ describe.skipIf(!enabled)('real PostgreSQL/Redis/API integration — explicitly 
   const design=await ok('/projects/'+p1.id+'/voices/design','POST',{name:'Fixture synthetic voice',description:'Warm calm adult voice speaking Russian clearly.',transcript:'Сегодня начинается новая история. Мы готовы идти дальше.'});await finished(design.jobId);const voice=await ok('/jobs/'+design.jobId+'/save-voice','POST',{});await ok('/characters/'+character.id,'PATCH',{expectedRevision:character.revision,defaultVoiceVersionId:voice.id});let current=await ok('/pages/'+page.id);const second={...current.utterances[0],id:randomUUID(),order:1,originalText:'Наш путь продолжается.',spokenText:'Наш путь продолжается.'};current=await ok('/pages/'+page.id,'PUT',{expectedRevision:current.revision,panels:[],utterances:[current.utterances[0],second].map(u=>({...u,included:true,voiceVersionId:voice.id}))});const jobs=await ok('/chapters/'+c1.id+'/speech','POST',{});for(const id of jobs.jobIds)await finished(id);const initial=await ok('/projects/'+p1.id+'/artifacts');expect(initial).toHaveLength(2);current=await ok('/pages/'+page.id);current=await ok('/pages/'+page.id,'PUT',{expectedRevision:current.revision,panels:[],utterances:current.utterances.map((u:any,i:number)=>i===0?{...u,spokenText:'Привет ещё раз!'}:u)});const update=await ok('/chapters/'+c1.id+'/speech','POST',{});expect(update.jobIds).toHaveLength(1);await finished(update.jobIds[0]);const render=await ok('/chapters/'+c1.id+'/render','POST',{});const rendered=await finished(render.jobId);expect(rendered.result.manifest.segments).toHaveLength(2);const wav=await fetch(origin+'/api/v1/files/'+rendered.result.fileKey,{headers:{Cookie:cookie1,Range:'bytes=0-43'}});expect(wav.status).toBe(206);expect(Buffer.from(await wav.arrayBuffer()).subarray(0,4).toString()).toBe('RIFF');expect((await fs.stat(storage.resolve(voice.referenceKey))).size).toBeGreaterThan(44);
  },180000);
  it.skipIf(process.env.MVS_INTEGRATION_GPU!=='true')('keeps VoxCPM v1 snapshots immutable and synthesizes uppercase Russian with v2 reference-only',async()=>{
-  const p=await ok('/projects','POST',{title:'Russian cloning regression'});projectIds.push(p.id);
+  const p=await ok('/projects','POST',{title:'Russian cloning regression',textLanguage:'ru',speechLanguage:'Russian'});projectIds.push(p.id);
   const chapter=await ok('/projects/'+p.id+'/chapters','POST',{title:'Case comparison'});
   const upload=new FormData();upload.append('files',new Blob([new Uint8Array(await fs.readFile('work/fixtures/chapter-1.png'))]),'page.png');await finished((await ok('/chapters/'+chapter.id+'/import','POST',upload)).jobId);
   const pageId=(await ok('/chapters/'+chapter.id)).pages[0].id,current=await ok('/pages/'+pageId);
@@ -158,7 +158,7 @@ describe.skipIf(!enabled)('real PostgreSQL/Redis/API integration — explicitly 
   const render=await finished((await ok('/chapters/'+chapter.id+'/render','POST',{})).jobId);expect(render.result.manifest.segments[0].text).toBe(utterance.spokenText);
  },150000);
  it.skipIf(process.env.MVS_INTEGRATION_GPU!=='true')('executes an immutable legacy Qwen job then requires VoxCPM audio for a new render',async()=>{
-  const p=await ok('/projects','POST',{title:'Legacy migration fixture'});projectIds.push(p.id);
+  const p=await ok('/projects','POST',{title:'Legacy migration fixture',textLanguage:'ru',speechLanguage:'Russian'});projectIds.push(p.id);
   const chapter=await ok('/projects/'+p.id+'/chapters','POST',{title:'Migration'});
   const upload=new FormData();upload.append('files',new Blob([new Uint8Array(await fs.readFile('work/fixtures/chapter-1.png'))]),'page.png');await finished((await ok('/chapters/'+chapter.id+'/import','POST',upload)).jobId);
   const pageId=(await ok('/chapters/'+chapter.id)).pages[0].id,current=await ok('/pages/'+pageId);

@@ -35,7 +35,7 @@ export class PagesService {
     const p = await this.access.page(ownerId, pageId);
 
     if (xConfirmReplace !== 'true' || !file) {
-      throw new ApiError(422, 'Подтвердите удаление связанной разметки');
+      throw new ApiError(422, 'Confirm deletion of the associated annotations');
     }
 
     const expectedRevision = revision.parse(Number(xExpectedRevision));
@@ -75,7 +75,7 @@ export class PagesService {
     const c = await this.repository.deleteChapterPagesChapterFindUnique(chapterId);
 
     if (!c) {
-      throw new ApiError(404, 'Глава не найдена');
+      throw new ApiError(404, 'Chapter not found');
     }
 
     await this.access.project(ownerId, c.projectId);

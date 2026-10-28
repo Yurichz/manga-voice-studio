@@ -35,7 +35,7 @@ export class JobEnqueueClService {
         const pageId = (input as any)?.pageId;
 
         if (pageId && !(await this.repository.tx(tx).enqueuePageFindFirst(pageId, projectId))) {
-          throw new ApiError(404, 'Страница удалена. Задание не может быть запущено.');
+          throw new ApiError(404, 'The page was deleted. This job cannot start.');
         }
       }
 
@@ -51,7 +51,7 @@ export class JobEnqueueClService {
       const pending = await this.repository.tx(tx).enqueueJobCount2(ownerId);
 
       if (pending + inputs.length - existing > 200) {
-        throw new ApiError(429, 'В очереди максимум 200 заданий. Дождитесь завершения или отмените лишние.');
+        throw new ApiError(429, 'The queue allows at most 200 jobs. Wait for completion or cancel pending jobs.');
       }
 
       const jobs = [];

@@ -25,10 +25,10 @@ export class ProjectsClService {
       const n = await this.repository.tx(tx).updateProjectProjectUpdateMany(p.id, expectedRevision, data);
 
       if (!n.count) {
-        throw new ApiError(409, 'Версия проекта изменилась');
+        throw new ApiError(409, 'The project revision changed');
       }
 
-      if (data.speechLanguage !== p.speechLanguage) {
+      if (data.speechLanguage !== undefined && data.speechLanguage !== p.speechLanguage) {
         await this.repository.tx(tx).updateProjectUtteranceUpdateMany(p.id);
         await this.repository.tx(tx).updateProjectPageUpdateMany(p.id);
         await this.repository.tx(tx).updateProjectChapterUpdateMany(p.id);

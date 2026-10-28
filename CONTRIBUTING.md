@@ -64,6 +64,25 @@ node scripts/verify-nest-migration.mjs --browser --only-browser
 
 Full launcher-driven restart tests are separately opt-in and must be run only against a dedicated test configuration. Local logs/media/reports belong in ignored `work/` or `outputs/`. Do not add user recordings, manga pages, secrets, model weights or environments to a PR.
 
+## English demo checks
+
+Prepare the English demo independently of the older Russian regression fixtures:
+
+```powershell
+.runtime\ai\Scripts\python.exe scripts/prepare_english_demo.py
+.\scripts\demo.ps1
+```
+
+Run the frontend in a second terminal (`pnpm dev:web`). With both running, execute:
+
+```powershell
+$env:MVS_DEMO_TEST = 'true'
+$env:PLAYWRIGHT_BROWSERS_PATH = Join-Path (Get-Location) '.cache/playwright'
+pnpm exec playwright test tests/e2e/demo.spec.ts --workers=1
+```
+
+The browser uses `en-US`, checks all four utterances and the real WAV timeline, plays audio, checks highlighting and refuses mutations. Its screenshot is written to ignored `outputs/ui/demo-english.png`. Review it before copying to `docs/assets/editor-demo.png`. Keep English system strings while retaining Russian input/transcript fixtures that test multilingual support. Run Python regressions with `.runtime/ai/Scripts/python.exe -m pytest services/ai -q`.
+
 ## Pull requests
 
 Explain the concrete behavior change and checks performed. Include API/schema compatibility impacts where relevant. Update documentation when commands or behavior change. Report unavailable hardware/integration checks as skipped, not passed.

@@ -16,7 +16,7 @@ export function sendApiError(error: any, request: Request, response: Response) {
       code: status === 409 ? 'REVISION_CONFLICT' : status === 422 ? 'VALIDATION_ERROR' : 'REQUEST_FAILED',
       message:
         status === 500
-          ? 'Внутренняя ошибка'
+          ? 'Internal server error'
           : error instanceof ZodError
             ? error.issues.map((issue) => issue.message).join('; ')
             : error.message,

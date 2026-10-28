@@ -26,7 +26,7 @@ export class PageDeletionClService {
       // Serialize both single and bulk deletion with page requests and job publication.
       await this.repository.tx(tx).deletePagesSqlQueryRaw(chapter.projectId);
       if (!(await this.repository.tx(tx).deletePagesProjectFindFirst(chapter.projectId, ownerId))) {
-        throw new ApiError(404, 'Проект не найден');
+        throw new ApiError(404, 'Project not found');
       }
 
       const ids = pages.map((p) => p.id),
@@ -34,11 +34,11 @@ export class PageDeletionClService {
       const current = await this.repository.tx(tx).deletePagesPageFindMany(scope);
 
       if (current.length !== pages.length) {
-        throw new ApiError(404, 'Одна из страниц не найдена в этой главе');
+        throw new ApiError(404, 'One of the pages was not found in this chapter');
       }
 
       if (pages.some((p) => current.find((c) => c.id === p.id)!.revision !== p.expectedRevision)) {
-        throw new ApiError(409, 'Версия страницы изменилась. Обновите список и повторите удаление.');
+        throw new ApiError(409, 'The page revision changed. Refresh the list and retry deletion.');
       }
 
       const affected = {

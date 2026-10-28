@@ -14,7 +14,7 @@ export class UploadLimitInterceptor implements NestInterceptor {
     const limit = limits.totalBytes + 1024 * 1024;
 
     if (Number(request.get('Content-Length') || 0) > limit) {
-      throw new ApiError(413, 'Импорт превышает 500 MiB');
+      throw new ApiError(413, 'The import exceeds 500 MiB');
     }
 
     let bytes = 0;

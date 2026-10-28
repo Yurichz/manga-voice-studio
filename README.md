@@ -3,34 +3,34 @@
 [![CI](https://github.com/Yurichz/manga-voice-studio/actions/workflows/ci.yml/badge.svg)](https://github.com/Yurichz/manga-voice-studio/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-Локальный редактор озвучки манги и комиксов. Загрузите страницы, проверьте реплики, закрепите голоса персонажей и соберите главу с синхронизированной подсветкой. Изображения, текст и аудио обрабатываются на вашем компьютере.
+A local comic voice editor: import pages, review dialogue, assign persistent character voices and assemble a chapter with synchronized highlighting. Images, text and audio are processed on your computer. The interface and system messages are English.
 
-[English](README.en.md) · [Установка](docs/setup.md) · [Архитектура](docs/architecture.md) · [Модели](docs/models.md) · [Проверки](docs/implementation-plan.md)
+[Setup](docs/setup.md) · [Architecture](docs/architecture.md) · [Models](docs/models.md) · [Verification](docs/implementation-plan.md)
 
-![Редактор в деморежиме: собственный тестовый рисунок, области реплик и плеер](docs/assets/editor-demo.png)
+![English editor demo showing three manga panels, four annotated utterances and synchronized audio playback](docs/assets/editor-demo.png)
 
-## Возможности
+## Features
 
-- Импорт PNG, JPEG, WebP и ZIP/CBZ; порядок страниц и удаление с подтверждением.
-- Ручная разметка областей, исправление OCR, порядок реплик, персонажи, паузы и выбор озвучиваемых фрагментов.
-- Локальные AI-предложения разметки и кандидатов персонажей с ручным подтверждением.
-- Создание синтетического голоса по описанию, импорт разрешённого WAV и сохранение версий голосов.
-- Генерация отдельных реплик и глав; повторное использование актуального аудио и выбор дублей.
-- Подготовка русских чисел и произношения с предпросмотром фактического текста синтеза.
-- Плеер с подсветкой, WAV/ZIP и отдельный MP3/JSON-экспорт `.mvs-publication.zip`.
-- Задания с прогрессом, отменой, повтором, проверкой версий и защитой от публикации устаревшего результата.
+- PNG/JPEG/WebP and ZIP/CBZ import, page ordering and confirmed deletion.
+- Manual region editing, OCR corrections, dialogue order, speakers, pauses and inclusion controls.
+- Local AI page-analysis proposals and character-reference candidates that require confirmation.
+- Synthetic voice design from a description, permitted WAV import and immutable voice versions.
+- Utterance and chapter generation, current-audio cache reuse and explicit take selection.
+- Russian number/pronunciation preparation with a preview of the actual synthesis text.
+- Synchronized playback, WAV/ZIP downloads and independent MP3/JSON publication export.
+- Progress, cancellation, retries, revision conflicts and fencing of late results.
 
-AI помогает редактору: текст, геометрию, порядок и говорящего нужно проверять. Ручное редактирование работает без загруженной GPU-модели. Интерфейс и основной сценарий ориентированы на русский язык; автоматического перевода нет.
+AI assists the editor; review text, regions, reading order and speakers. Manual editing is available without a loaded GPU model. New projects default to English text and speech, with right-to-left reading order configured independently. Existing projects keep their languages, texts and audio. Automatic translation is not included.
 
-## Стек
+## Stack and data flow
 
-| Часть | Технологии |
+| Component | Technology |
 | --- | --- |
-| Редактор | Next.js, React, TypeScript, TanStack Query, Zustand, SVG, Tailwind CSS |
-| API | NestJS, Better Auth, Zod, архитектура BL/DA/CL |
-| Данные | PostgreSQL, Prisma, pgvector, приватное файловое хранилище |
-| Задания | NestJS worker, BullMQ, Redis, transactional outbox |
-| Инференс | Python/FastAPI, Qwen3-VL, VoxCPM2, SigLIP2 |
+| Editor | Next.js, React, TypeScript, TanStack Query, Zustand, SVG, Tailwind CSS |
+| API | NestJS, Better Auth, Zod, BL/DA/CL layers |
+| Persistence | PostgreSQL, Prisma, pgvector, private local files |
+| Jobs | NestJS worker, BullMQ, Redis, transactional outbox |
+| Inference | Python/FastAPI, Qwen3-VL, VoxCPM2, SigLIP2 |
 
 ```mermaid
 flowchart LR
@@ -45,11 +45,11 @@ flowchart LR
   AI --> Files
 ```
 
-## Быстрый старт на Windows
+## Windows quick start
 
-Проверенная конфигурация: Windows, NVIDIA RTX 4090 с 24 GB VRAM, Node.js **26.3.1**, pnpm **11.25.0**, Python **3.12.13** через `uv` и Docker Desktop с Linux engine/WSL2. Это проверенная машина, а не обещание минимальных требований. Текущим моделям требуется около **15.34 GB** весов, дополнительно — место для окружений, загрузочного кэша и данных. Другие ОС и видеокарты пока не проверены.
+Verified configuration: Windows, NVIDIA RTX 4090 with 24 GB VRAM, Node.js **26.3.1**, pnpm **11.25.0**, Python **3.12.13** managed by `uv`, and Docker Desktop with its Linux engine/WSL2. This is a tested configuration, not a minimum-hardware claim. Current model weights total about **15.34 GB**; environments, download cache and project data need additional space. Other operating systems and GPUs are not verified.
 
-Установите Git, указанные Node.js/pnpm, [uv](https://docs.astral.sh/uv/getting-started/installation/) и Docker Desktop. Запустите Docker Desktop и дождитесь готовности Linux engine.
+Install Git, the stated Node.js/pnpm versions, [uv](https://docs.astral.sh/uv/getting-started/installation/) and Docker Desktop. Start Docker Desktop and wait for the Linux engine.
 
 ```powershell
 git clone https://github.com/Yurichz/manga-voice-studio.git
@@ -62,19 +62,32 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force
 pnpm bootstrap
 ```
 
-`setup.ps1` создаёт `.env` из примера с локальными случайными секретами и устанавливает закреплённые зависимости в проект. `download-models.ps1` показывает выбранные модели и объём до загрузки. Bootstrap создаёт первого владельца; email и случайный пароль находятся в `.runtime/owner-credentials.txt`. Повторный bootstrap не перезаписывает владельца.
+`setup.ps1` generates a local `.env` from the example with random secrets and installs pinned dependencies inside the project. The model downloader prints selected models and storage requirements before downloading. Bootstrap creates the first owner and writes the email/random password to `.runtime/owner-credentials.txt`. It refuses to replace an existing owner.
 
-Откройте **http://localhost:3000**. Сервисы слушают loopback. Остановка — `studio.cmd stop`, диагностика запущенного приложения — `studio.cmd diagnose`. Модели, окружения и пользовательские файлы в Git не входят. Подробности, порты и решение проблем — в [руководстве установки](docs/setup.md).
+Open **http://localhost:3000**. Services bind to loopback. Use `studio.cmd stop` to stop owned processes and `studio.cmd diagnose` to diagnose a running application. Model weights, environments and user files are excluded from Git. See [setup and troubleshooting](docs/setup.md) for configuration and ports.
 
-## Работа с главой
+## Chapter workflow
 
-1. Создайте произведение и главу, загрузите страницы.
-2. Создайте разметку вручную или запустите AI-анализ. Проверьте текст, порядок и персонажей.
-3. Создайте/импортируйте голос, прослушайте его и сохраните профиль. Назначьте голоса репликам.
-4. Отметьте реплики проверенными и запустите озвучку. Неактуальные фрагменты можно пересоздавать отдельно.
-5. Соберите главу, проверьте плеер и скачайте результат. «Экспорт для сайта» создаёт пакет для независимого читателя без повторного TTS.
+1. Create a project and chapter, then import pages.
+2. Draw regions manually or request AI proposals. Review text, order and speakers.
+3. Design/import a voice, listen and save its profile. Assign voices to utterances.
+4. Mark utterances reviewed and generate speech. Regenerate individual stale lines when needed.
+5. Render the chapter, check synchronized playback and export. The separate publication package encodes the completed audio for an independent reader without running TTS again.
 
-## Разработка и проверки
+## English demo
+
+The screenshot above comes from the actual read-only editor. It uses the [supplied English manga page](docs/assets/demo-manga.png), three panels and four manually annotated utterances. A synthetic English voice and all four recordings are generated with the local pinned models; the assembled WAV has a real sample-based timeline.
+
+After setup and model download, prepare the demo once:
+
+```powershell
+.runtime\ai\Scripts\python.exe scripts/prepare_english_demo.py
+.\scripts\demo.ps1
+```
+
+Run `pnpm dev:web` in a second terminal and open http://localhost:3000. Generation uses an isolated local supervisor and separate storage. Viewing needs neither PostgreSQL, Redis nor AI. `DEMO_ROOT` defaults to `storage/demo-english`; the older Russian regression fixtures remain separate. Generated voices, audio and demo data stay local and are excluded from Git. The generator resumes verified cached results; use `--regenerate` for a new voice.
+
+## Development and verification
 
 ```powershell
 pnpm build
@@ -85,26 +98,26 @@ pnpm test
 pnpm contract:verify
 ```
 
-GitHub Actions выполняет эти проверки без GPU и пользовательских данных. Интеграционные тесты включаются отдельно:
+GitHub Actions runs these checks without a GPU or user data. Real integration is opt-in:
 
 ```powershell
 pnpm test:server:integration
 pnpm test:server:gpu
 ```
 
-Этим командам нужны Docker, локальные Python-окружения и тестовые медиа. Они создают отдельные БД, очередь и хранилище. Подготовка фикстур и условия запуска — в [CONTRIBUTING.md](CONTRIBUTING.md). Для разработки API/worker доступны `pnpm dev:api` и `pnpm dev:worker`; собранные приложения запускаются через `pnpm start:api` и `pnpm start:worker`.
+These commands require Docker, local Python environments and test media. They use disposable databases, queues and separate storage. [CONTRIBUTING.md](CONTRIBUTING.md) explains fixture preparation and prerequisites. Use `pnpm dev:api`/`pnpm dev:worker` for source execution and `pnpm start:api`/`pnpm start:worker` for compiled applications.
 
-На **2026-10-28** проверены 17 модульных, 28 интеграционных и 13 браузерных сценариев, включая реальные локальные модели. Это результаты конкретной Windows-конфигурации. Границы и состав проверок — в [отчёте](docs/implementation-plan.md).
+The [English UI and demo verification report](docs/english-ui.md) records the current checks. Earlier full GPU and browser results are dated in the [implementation report](docs/implementation-plan.md).
 
-## Документация
+## Documentation
 
-- [Продукт и ограничения](docs/product.md)
-- [Установка, конфигурация, резервное копирование и диагностика](docs/setup.md)
-- [Архитектура и разделение ответственности](docs/architecture.md)
-- [Модели и версии](docs/models.md)
-- [NestJS и BL/DA/CL](docs/nest-migration.md)
-- [Формат экспорта и интеграция с читателем](docs/editor-integration-audit.md)
+- [Product scope](docs/product.md)
+- [Installation, configuration, backup and troubleshooting](docs/setup.md)
+- [Architecture](docs/architecture.md)
+- [Model revisions and runtime behavior](docs/models.md)
+- [NestJS BL/DA/CL boundaries](docs/nest-migration.md)
+- [Publication export and reader integration](docs/editor-integration-audit.md)
 
-## Лицензия
+## License
 
-Собственный код — [MIT](LICENSE). Зависимости и модели сохраняют собственные лицензии: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Используйте страницы и голосовые записи, на обработку которых у вас есть права. Субъективное качество озвучки и точность распознавания требуют проверки; опубликованного бенчмарка на реальной манге нет.
+Original source: [MIT](LICENSE). Dependencies and models retain their own licenses; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Use pages and recordings you have permission to process. Speech quality and recognition accuracy require review; there is no published real-manga accuracy benchmark.

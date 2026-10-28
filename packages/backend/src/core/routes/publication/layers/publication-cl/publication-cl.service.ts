@@ -44,7 +44,7 @@ export class PublicationClService {
       const report = inspectChapter(c);
 
       if (!ffmpegReady) {
-        report.issues.push({ field: 'ffmpeg', message: 'FFmpeg недоступен. Установите ffmpeg-static или задайте FFMPEG_PATH' });
+        report.issues.push({ field: 'ffmpeg', message: 'FFmpeg is unavailable. Install ffmpeg-static or set FFMPEG_PATH' });
       }
 
       for (const p of c.pages) {
@@ -53,7 +53,7 @@ export class PublicationClService {
             throw new Error();
           }
         } catch {
-          report.issues.push({ field: 'image', pageId: p.id, message: 'Нет готового изображения страницы' });
+          report.issues.push({ field: 'image', pageId: p.id, message: 'The page image is not ready' });
         }
 
         for (const u of p.utterances.filter((u: any) => u.included)) {
@@ -68,7 +68,7 @@ export class PublicationClService {
             input.referenceChecksum !== u.voice?.checksum ||
             input.language !== project.speechLanguage
           ) {
-            report.issues.push({ field: 'audio', utteranceId: u.id, pageId: p.id, message: 'Аудио отсутствует или устарело' });
+            report.issues.push({ field: 'audio', utteranceId: u.id, pageId: p.id, message: 'The audio is missing or stale' });
           }
         }
       }
@@ -79,7 +79,7 @@ export class PublicationClService {
             throw new Error();
           }
         } catch {
-          report.issues.push({ field: 'render', message: 'Файл готовой сборки недоступен; соберите главу заново' });
+          report.issues.push({ field: 'render', message: 'The rendered audio file is unavailable; render the chapter again' });
         }
       }
 
@@ -96,14 +96,14 @@ export class PublicationClService {
         const p = await this.repository.tx(tx).capturePublicationProjectFindFirst(projectId, ownerId);
 
         if (!p) {
-          fail('project', 'Проект недоступен');
+          fail('project', 'The project is unavailable');
         }
 
         const sourceNamespace = await namespace(projectId);
         const chapters = await this.repository.tx(tx).capturePublicationChapterFindMany(projectId, chapterIds);
 
         if (chapters.length !== chapterIds.length) {
-          fail('chapters', 'Не все главы принадлежат произведению');
+          fail('chapters', 'Some chapters do not belong to this project');
         }
 
         for (const c of chapters) {
@@ -127,7 +127,7 @@ export class PublicationClService {
               input.referenceChecksum !== u.voice?.checksum ||
               input.language !== p.speechLanguage
             ) {
-              fail(s.utteranceId, 'Аудио отсутствует или устарело');
+              fail(s.utteranceId, 'The audio is missing or stale');
             }
           }
         }
@@ -141,7 +141,7 @@ export class PublicationClService {
         }
 
         if (metadata.coverPageId && !chapters.some((c: any) => c.pages.some((p: any) => p.id === metadata.coverPageId))) {
-          fail('cover', 'Обложка должна быть одной из выбранных страниц');
+          fail('cover', 'The cover must be one of the selected pages');
         }
 
         return {
