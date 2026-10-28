@@ -1,0 +1,3 @@
+import {it,expect} from 'vitest';
+import {inspectChapter} from '../packages/publication/src/export.js';
+it('blocks unreviewed/stale/missing render without excluding a line silently',()=>{const u={id:'u',pageId:'p',included:true,reviewStatus:'unreviewed',spokenText:'Текст',voiceVersionId:'v',panelId:null,bbox:{x:.1,y:.1,width:.2,height:.2}};const c={id:'c',title:'Глава',revision:2,pages:[{id:'p',width:100,height:100,utterances:[u]}],renders:[{inputRevision:1,manifest:{durationMs:1000,segments:[]}}]};const report=inspectChapter(c);expect(report.ready).toBe(false);expect(report.issues.some(i=>i.field==='render')).toBe(true);expect(report.issues.some(i=>i.field==='reviewStatus'&&i.utteranceId==='u')).toBe(true);expect(u.included).toBe(true);});

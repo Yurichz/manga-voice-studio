@@ -1,0 +1,18 @@
+{
+  "name": "@mvs/publication",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "exports": {
+    ".": {
+      "types": "./src/export.ts",
+      "mvs-source": "./src/export.ts",
+      "default": "./dist/export.js"
+    }
+  },
+  "dependencies": {
+    "@mvs/contracts": "workspace:*",
+    "@mvs/storage": "workspace:*",
+    "@mvs/publication-format": "file:../../vendor/mvs-publication-format-1.0.0.tgz"
+  }
+}

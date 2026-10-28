@@ -1,0 +1,262 @@
+{
+  "name": "@mvs/backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "mvs-source": "./src/index.ts",
+      "default": "./dist/index.js"
+    },
+    "./common": {
+      "types": "./src/common.ts",
+      "mvs-source": "./src/common.ts",
+      "default": "./dist/common.js"
+    },
+    "./prisma": {
+      "types": "./src/core/providers/prisma/index.ts",
+      "mvs-source": "./src/core/providers/prisma/index.ts",
+      "default": "./dist/core/providers/prisma/index.js"
+    },
+    "./access": {
+      "types": "./src/core/routes/access/index.ts",
+      "mvs-source": "./src/core/routes/access/index.ts",
+      "default": "./dist/core/routes/access/index.js"
+    },
+    "./jobs": {
+      "types": "./src/core/routes/jobs/index.ts",
+      "mvs-source": "./src/core/routes/jobs/index.ts",
+      "default": "./dist/core/routes/jobs/index.js"
+    },
+    "./pages": {
+      "types": "./src/core/routes/pages/index.ts",
+      "mvs-source": "./src/core/routes/pages/index.ts",
+      "default": "./dist/core/routes/pages/index.js"
+    },
+    "./speech": {
+      "types": "./src/core/routes/speech/index.ts",
+      "mvs-source": "./src/core/routes/speech/index.ts",
+      "default": "./dist/core/routes/speech/index.js"
+    },
+    "./publication": {
+      "types": "./src/core/routes/publication/index.ts",
+      "mvs-source": "./src/core/routes/publication/index.ts",
+      "default": "./dist/core/routes/publication/index.js"
+    },
+    "./ai": {
+      "types": "./src/core/providers/ai/ai.service.ts",
+      "mvs-source": "./src/core/providers/ai/ai.service.ts",
+      "default": "./dist/core/providers/ai/ai.service.js"
+    },
+    "./auth": {
+      "types": "./src/core/providers/auth/auth.service.ts",
+      "mvs-source": "./src/core/providers/auth/auth.service.ts",
+      "default": "./dist/core/providers/auth/auth.service.js"
+    },
+    "./repositories/publication": {
+      "types": "./src/core/routes/publication/layers/publication-da/publication.repository.ts",
+      "mvs-source": "./src/core/routes/publication/layers/publication-da/publication.repository.ts",
+      "default": "./dist/core/routes/publication/layers/publication-da/publication.repository.js"
+    },
+    "./repositories/speech-snapshot": {
+      "types": "./src/core/routes/speech/layers/speech-da/speech-snapshot.repository.ts",
+      "mvs-source": "./src/core/routes/speech/layers/speech-da/speech-snapshot.repository.ts",
+      "default": "./dist/core/routes/speech/layers/speech-da/speech-snapshot.repository.js"
+    },
+    "./repositories/page-deletion": {
+      "types": "./src/core/routes/pages/layers/pages-da/page-deletion.repository.ts",
+      "mvs-source": "./src/core/routes/pages/layers/pages-da/page-deletion.repository.ts",
+      "default": "./dist/core/routes/pages/layers/pages-da/page-deletion.repository.js"
+    },
+    "./repositories/job-enqueue": {
+      "types": "./src/core/routes/jobs/layers/jobs-da/job-enqueue.repository.ts",
+      "mvs-source": "./src/core/routes/jobs/layers/jobs-da/job-enqueue.repository.ts",
+      "default": "./dist/core/routes/jobs/layers/jobs-da/job-enqueue.repository.js"
+    },
+    "./repositories/job-progress": {
+      "types": "./src/core/routes/jobs/layers/jobs-da/job-progress.repository.ts",
+      "mvs-source": "./src/core/routes/jobs/layers/jobs-da/job-progress.repository.ts",
+      "default": "./dist/core/routes/jobs/layers/jobs-da/job-progress.repository.js"
+    },
+    "./repositories/access": {
+      "types": "./src/core/routes/access/layers/access-da/access.repository.ts",
+      "mvs-source": "./src/core/routes/access/layers/access-da/access.repository.ts",
+      "default": "./dist/core/routes/access/layers/access-da/access.repository.js"
+    },
+    "./repositories/analysis": {
+      "types": "./src/core/routes/analysis/layers/analysis-da/analysis.repository.ts",
+      "mvs-source": "./src/core/routes/analysis/layers/analysis-da/analysis.repository.ts",
+      "default": "./dist/core/routes/analysis/layers/analysis-da/analysis.repository.js"
+    },
+    "./repositories/chapters": {
+      "types": "./src/core/routes/chapters/layers/chapters-da/chapters.repository.ts",
+      "mvs-source": "./src/core/routes/chapters/layers/chapters-da/chapters.repository.ts",
+      "default": "./dist/core/routes/chapters/layers/chapters-da/chapters.repository.js"
+    },
+    "./repositories/characters": {
+      "types": "./src/core/routes/characters/layers/characters-da/characters.repository.ts",
+      "mvs-source": "./src/core/routes/characters/layers/characters-da/characters.repository.ts",
+      "default": "./dist/core/routes/characters/layers/characters-da/characters.repository.js"
+    },
+    "./repositories/diagnostics": {
+      "types": "./src/core/routes/diagnostics/layers/diagnostics-da/diagnostics.repository.ts",
+      "mvs-source": "./src/core/routes/diagnostics/layers/diagnostics-da/diagnostics.repository.ts",
+      "default": "./dist/core/routes/diagnostics/layers/diagnostics-da/diagnostics.repository.js"
+    },
+    "./repositories/files": {
+      "types": "./src/core/routes/files/layers/files-da/files.repository.ts",
+      "mvs-source": "./src/core/routes/files/layers/files-da/files.repository.ts",
+      "default": "./dist/core/routes/files/layers/files-da/files.repository.js"
+    },
+    "./repositories/jobs": {
+      "types": "./src/core/routes/jobs/layers/jobs-da/jobs.repository.ts",
+      "mvs-source": "./src/core/routes/jobs/layers/jobs-da/jobs.repository.ts",
+      "default": "./dist/core/routes/jobs/layers/jobs-da/jobs.repository.js"
+    },
+    "./repositories/pages": {
+      "types": "./src/core/routes/pages/layers/pages-da/pages.repository.ts",
+      "mvs-source": "./src/core/routes/pages/layers/pages-da/pages.repository.ts",
+      "default": "./dist/core/routes/pages/layers/pages-da/pages.repository.js"
+    },
+    "./repositories/projects": {
+      "types": "./src/core/routes/projects/layers/projects-da/projects.repository.ts",
+      "mvs-source": "./src/core/routes/projects/layers/projects-da/projects.repository.ts",
+      "default": "./dist/core/routes/projects/layers/projects-da/projects.repository.js"
+    },
+    "./repositories/speech": {
+      "types": "./src/core/routes/speech/layers/speech-da/speech.repository.ts",
+      "mvs-source": "./src/core/routes/speech/layers/speech-da/speech.repository.ts",
+      "default": "./dist/core/routes/speech/layers/speech-da/speech.repository.js"
+    },
+    "./repositories/voices": {
+      "types": "./src/core/routes/voices/layers/voices-da/voices.repository.ts",
+      "mvs-source": "./src/core/routes/voices/layers/voices-da/voices.repository.ts",
+      "default": "./dist/core/routes/voices/layers/voices-da/voices.repository.js"
+    },
+    "./repositories/job-publication": {
+      "types": "./src/core/routes/jobs/layers/jobs-da/job-publication.repository.ts",
+      "mvs-source": "./src/core/routes/jobs/layers/jobs-da/job-publication.repository.ts",
+      "default": "./dist/core/routes/jobs/layers/jobs-da/job-publication.repository.js"
+    },
+    "./repositories/job-processor": {
+      "types": "./src/core/routes/jobs/layers/jobs-da/job-processor.repository.ts",
+      "mvs-source": "./src/core/routes/jobs/layers/jobs-da/job-processor.repository.ts",
+      "default": "./dist/core/routes/jobs/layers/jobs-da/job-processor.repository.js"
+    },
+    "./repositories/outbox": {
+      "types": "./src/core/routes/jobs/layers/jobs-da/outbox.repository.ts",
+      "mvs-source": "./src/core/routes/jobs/layers/jobs-da/outbox.repository.ts",
+      "default": "./dist/core/routes/jobs/layers/jobs-da/outbox.repository.js"
+    },
+    "./repositories/worker-runtime": {
+      "types": "./src/core/routes/jobs/layers/jobs-da/worker-runtime.repository.ts",
+      "mvs-source": "./src/core/routes/jobs/layers/jobs-da/worker-runtime.repository.ts",
+      "default": "./dist/core/routes/jobs/layers/jobs-da/worker-runtime.repository.js"
+    },
+    "./repositories/render-snapshot": {
+      "types": "./src/core/routes/jobs/layers/jobs-da/render-snapshot.repository.ts",
+      "mvs-source": "./src/core/routes/jobs/layers/jobs-da/render-snapshot.repository.ts",
+      "default": "./dist/core/routes/jobs/layers/jobs-da/render-snapshot.repository.js"
+    },
+    "./repositories/character-search": {
+      "types": "./src/core/routes/jobs/layers/jobs-da/character-search.repository.ts",
+      "mvs-source": "./src/core/routes/jobs/layers/jobs-da/character-search.repository.ts",
+      "default": "./dist/core/routes/jobs/layers/jobs-da/character-search.repository.js"
+    },
+    "./repositories/import": {
+      "types": "./src/core/routes/jobs/layers/jobs-da/import.repository.ts",
+      "mvs-source": "./src/core/routes/jobs/layers/jobs-da/import.repository.ts",
+      "default": "./dist/core/routes/jobs/layers/jobs-da/import.repository.js"
+    },
+    "./repositories/publication-export": {
+      "types": "./src/core/routes/jobs/layers/jobs-da/publication-export.repository.ts",
+      "mvs-source": "./src/core/routes/jobs/layers/jobs-da/publication-export.repository.ts",
+      "default": "./dist/core/routes/jobs/layers/jobs-da/publication-export.repository.js"
+    },
+    "./modules/publication-da": {
+      "types": "./src/core/routes/publication/layers/publication-da/publication-da.module.ts",
+      "mvs-source": "./src/core/routes/publication/layers/publication-da/publication-da.module.ts",
+      "default": "./dist/core/routes/publication/layers/publication-da/publication-da.module.js"
+    },
+    "./modules/speech-da": {
+      "types": "./src/core/routes/speech/layers/speech-da/speech-da.module.ts",
+      "mvs-source": "./src/core/routes/speech/layers/speech-da/speech-da.module.ts",
+      "default": "./dist/core/routes/speech/layers/speech-da/speech-da.module.js"
+    },
+    "./modules/pages-da": {
+      "types": "./src/core/routes/pages/layers/pages-da/pages-da.module.ts",
+      "mvs-source": "./src/core/routes/pages/layers/pages-da/pages-da.module.ts",
+      "default": "./dist/core/routes/pages/layers/pages-da/pages-da.module.js"
+    },
+    "./modules/jobs-da": {
+      "types": "./src/core/routes/jobs/layers/jobs-da/jobs-da.module.ts",
+      "mvs-source": "./src/core/routes/jobs/layers/jobs-da/jobs-da.module.ts",
+      "default": "./dist/core/routes/jobs/layers/jobs-da/jobs-da.module.js"
+    },
+    "./modules/access-da": {
+      "types": "./src/core/routes/access/layers/access-da/access-da.module.ts",
+      "mvs-source": "./src/core/routes/access/layers/access-da/access-da.module.ts",
+      "default": "./dist/core/routes/access/layers/access-da/access-da.module.js"
+    },
+    "./modules/analysis-da": {
+      "types": "./src/core/routes/analysis/layers/analysis-da/analysis-da.module.ts",
+      "mvs-source": "./src/core/routes/analysis/layers/analysis-da/analysis-da.module.ts",
+      "default": "./dist/core/routes/analysis/layers/analysis-da/analysis-da.module.js"
+    },
+    "./modules/chapters-da": {
+      "types": "./src/core/routes/chapters/layers/chapters-da/chapters-da.module.ts",
+      "mvs-source": "./src/core/routes/chapters/layers/chapters-da/chapters-da.module.ts",
+      "default": "./dist/core/routes/chapters/layers/chapters-da/chapters-da.module.js"
+    },
+    "./modules/characters-da": {
+      "types": "./src/core/routes/characters/layers/characters-da/characters-da.module.ts",
+      "mvs-source": "./src/core/routes/characters/layers/characters-da/characters-da.module.ts",
+      "default": "./dist/core/routes/characters/layers/characters-da/characters-da.module.js"
+    },
+    "./modules/diagnostics-da": {
+      "types": "./src/core/routes/diagnostics/layers/diagnostics-da/diagnostics-da.module.ts",
+      "mvs-source": "./src/core/routes/diagnostics/layers/diagnostics-da/diagnostics-da.module.ts",
+      "default": "./dist/core/routes/diagnostics/layers/diagnostics-da/diagnostics-da.module.js"
+    },
+    "./modules/files-da": {
+      "types": "./src/core/routes/files/layers/files-da/files-da.module.ts",
+      "mvs-source": "./src/core/routes/files/layers/files-da/files-da.module.ts",
+      "default": "./dist/core/routes/files/layers/files-da/files-da.module.js"
+    },
+    "./modules/projects-da": {
+      "types": "./src/core/routes/projects/layers/projects-da/projects-da.module.ts",
+      "mvs-source": "./src/core/routes/projects/layers/projects-da/projects-da.module.ts",
+      "default": "./dist/core/routes/projects/layers/projects-da/projects-da.module.js"
+    },
+    "./modules/voices-da": {
+      "types": "./src/core/routes/voices/layers/voices-da/voices-da.module.ts",
+      "mvs-source": "./src/core/routes/voices/layers/voices-da/voices-da.module.ts",
+      "default": "./dist/core/routes/voices/layers/voices-da/voices-da.module.js"
+    },
+    "./ai-module": {
+      "types": "./src/core/providers/ai/ai.module.ts",
+      "mvs-source": "./src/core/providers/ai/ai.module.ts",
+      "default": "./dist/core/providers/ai/ai.module.js"
+    },
+    "./auth-module": {
+      "types": "./src/core/providers/auth/auth.module.ts",
+      "mvs-source": "./src/core/providers/auth/auth.module.ts",
+      "default": "./dist/core/providers/auth/auth.module.js"
+    },
+    "./repositories/speech-synthesis": {
+      "types": "./src/core/routes/jobs/layers/jobs-da/speech.repository.ts",
+      "mvs-source": "./src/core/routes/jobs/layers/jobs-da/speech.repository.ts",
+      "default": "./dist/core/routes/jobs/layers/jobs-da/speech.repository.js"
+    }
+  },
+  "dependencies": {
+    "@mvs/database": "workspace:*",
+    "@mvs/contracts": "workspace:*",
+    "@mvs/storage": "workspace:*",
+    "@mvs/publication": "workspace:*",
+    "@nestjs/common": "12.1.2",
+    "better-auth": "1.7.7",
+    "zod": "4.6.5"
+  }
+}

@@ -1,0 +1,386 @@
+[
+  {
+    "domain": "identity",
+    "name": "me",
+    "method": "get",
+    "path": "/me",
+    "status": 200,
+    "bodySchema": false
+  },
+  {
+    "domain": "projects",
+    "name": "listProjects",
+    "method": "get",
+    "path": "/projects",
+    "status": 200,
+    "bodySchema": false
+  },
+  {
+    "domain": "projects",
+    "name": "createProject",
+    "method": "post",
+    "path": "/projects",
+    "status": 201,
+    "bodySchema": true
+  },
+  {
+    "domain": "projects",
+    "name": "getProject",
+    "method": "get",
+    "path": "/projects/:projectId",
+    "status": 200,
+    "bodySchema": false
+  },
+  {
+    "domain": "projects",
+    "name": "updateProject",
+    "method": "patch",
+    "path": "/projects/:projectId",
+    "status": 200,
+    "bodySchema": true
+  },
+  {
+    "domain": "projects",
+    "name": "deleteProject",
+    "method": "delete",
+    "path": "/projects/:projectId",
+    "status": 202,
+    "bodySchema": false
+  },
+  {
+    "domain": "chapters",
+    "name": "createChapter",
+    "method": "post",
+    "path": "/projects/:projectId/chapters",
+    "status": 201,
+    "bodySchema": true
+  },
+  {
+    "domain": "chapters",
+    "name": "getChapter",
+    "method": "get",
+    "path": "/chapters/:chapterId",
+    "status": 200,
+    "bodySchema": false
+  },
+  {
+    "domain": "chapters",
+    "name": "updateChapter",
+    "method": "patch",
+    "path": "/chapters/:chapterId",
+    "status": 200,
+    "bodySchema": true
+  },
+  {
+    "domain": "pages",
+    "name": "replacePage",
+    "method": "post",
+    "path": "/pages/:pageId/replace",
+    "status": 202,
+    "bodySchema": false
+  },
+  {
+    "domain": "chapters",
+    "name": "importChapter",
+    "method": "post",
+    "path": "/chapters/:chapterId/import",
+    "status": 202,
+    "bodySchema": false
+  },
+  {
+    "domain": "pages",
+    "name": "getPage",
+    "method": "get",
+    "path": "/pages/:pageId",
+    "status": 200,
+    "bodySchema": false
+  },
+  {
+    "domain": "pages",
+    "name": "updatePage",
+    "method": "put",
+    "path": "/pages/:pageId",
+    "status": 200,
+    "bodySchema": true
+  },
+  {
+    "domain": "pages",
+    "name": "deletePage",
+    "method": "delete",
+    "path": "/pages/:pageId",
+    "status": 200,
+    "bodySchema": true
+  },
+  {
+    "domain": "pages",
+    "name": "deleteChapterPages",
+    "method": "delete",
+    "path": "/chapters/:chapterId/pages",
+    "status": 200,
+    "bodySchema": true
+  },
+  {
+    "domain": "characters",
+    "name": "createCharacter",
+    "method": "post",
+    "path": "/projects/:projectId/characters",
+    "status": 201,
+    "bodySchema": true
+  },
+  {
+    "domain": "characters",
+    "name": "updateCharacter",
+    "method": "patch",
+    "path": "/characters/:characterId",
+    "status": 200,
+    "bodySchema": true
+  },
+  {
+    "domain": "characters",
+    "name": "mergeCharacter",
+    "method": "post",
+    "path": "/characters/:characterId/merge",
+    "status": 200,
+    "bodySchema": true
+  },
+  {
+    "domain": "characters",
+    "name": "undoMerge",
+    "method": "post",
+    "path": "/merges/:mergeId/undo",
+    "status": 200,
+    "bodySchema": false
+  },
+  {
+    "domain": "characters",
+    "name": "listMerges",
+    "method": "get",
+    "path": "/projects/:projectId/merges",
+    "status": 200,
+    "bodySchema": false
+  },
+  {
+    "domain": "characters",
+    "name": "previewMerge",
+    "method": "get",
+    "path": "/characters/:characterId/merge-preview",
+    "status": 200,
+    "bodySchema": false
+  },
+  {
+    "domain": "characters",
+    "name": "deleteReference",
+    "method": "delete",
+    "path": "/references/:referenceId",
+    "status": 200,
+    "bodySchema": false
+  },
+  {
+    "domain": "characters",
+    "name": "confirmAppearance",
+    "method": "post",
+    "path": "/appearances/:appearanceId/confirm",
+    "status": 200,
+    "bodySchema": true
+  },
+  {
+    "domain": "voices",
+    "name": "applyVoice",
+    "method": "post",
+    "path": "/voices/:voiceVersionId/apply",
+    "status": 200,
+    "bodySchema": true
+  },
+  {
+    "domain": "characters",
+    "name": "createReference",
+    "method": "post",
+    "path": "/characters/:characterId/references",
+    "status": 202,
+    "bodySchema": true
+  },
+  {
+    "domain": "analysis",
+    "name": "findCandidates",
+    "method": "post",
+    "path": "/pages/:pageId/candidates",
+    "status": 202,
+    "bodySchema": true
+  },
+  {
+    "domain": "analysis",
+    "name": "analysePage",
+    "method": "post",
+    "path": "/pages/:pageId/analysis",
+    "status": 202,
+    "bodySchema": false
+  },
+  {
+    "domain": "analysis",
+    "name": "listAnalyses",
+    "method": "get",
+    "path": "/pages/:pageId/analyses",
+    "status": 200,
+    "bodySchema": false
+  },
+  {
+    "domain": "analysis",
+    "name": "applyAnalysis",
+    "method": "post",
+    "path": "/analyses/:analysisId/apply",
+    "status": 200,
+    "bodySchema": true
+  },
+  {
+    "domain": "voices",
+    "name": "designVoice",
+    "method": "post",
+    "path": "/projects/:projectId/voices/design",
+    "status": 202,
+    "bodySchema": true
+  },
+  {
+    "domain": "voices",
+    "name": "importVoice",
+    "method": "post",
+    "path": "/projects/:projectId/voices/import",
+    "status": 202,
+    "bodySchema": false
+  },
+  {
+    "domain": "voices",
+    "name": "saveVoice",
+    "method": "post",
+    "path": "/jobs/:jobId/save-voice",
+    "status": 201,
+    "bodySchema": false
+  },
+  {
+    "domain": "speech",
+    "name": "pronunciation",
+    "method": "get",
+    "path": "/utterances/:utteranceId/pronunciation",
+    "status": 200,
+    "bodySchema": false
+  },
+  {
+    "domain": "speech",
+    "name": "speechUtterance",
+    "method": "post",
+    "path": "/utterances/:utteranceId/speech",
+    "status": 202,
+    "bodySchema": true
+  },
+  {
+    "domain": "speech",
+    "name": "selectAudio",
+    "method": "post",
+    "path": "/utterances/:utteranceId/audio",
+    "status": 200,
+    "bodySchema": true
+  },
+  {
+    "domain": "speech",
+    "name": "speechChapter",
+    "method": "post",
+    "path": "/chapters/:chapterId/speech",
+    "status": 202,
+    "bodySchema": true
+  },
+  {
+    "domain": "speech",
+    "name": "cancelChapterSpeech",
+    "method": "post",
+    "path": "/chapters/:chapterId/speech/cancel",
+    "status": 202,
+    "bodySchema": false
+  },
+  {
+    "domain": "speech",
+    "name": "listArtifacts",
+    "method": "get",
+    "path": "/projects/:projectId/artifacts",
+    "status": 200,
+    "bodySchema": false
+  },
+  {
+    "domain": "jobs",
+    "name": "jobProgress",
+    "method": "get",
+    "path": "/projects/:projectId/job-progress",
+    "status": 200,
+    "bodySchema": false
+  },
+  {
+    "domain": "jobs",
+    "name": "listJobs",
+    "method": "get",
+    "path": "/projects/:projectId/jobs",
+    "status": 200,
+    "bodySchema": false
+  },
+  {
+    "domain": "jobs",
+    "name": "getJob",
+    "method": "get",
+    "path": "/jobs/:jobId",
+    "status": 200,
+    "bodySchema": false
+  },
+  {
+    "domain": "jobs",
+    "name": "cancelJob",
+    "method": "post",
+    "path": "/jobs/:jobId/cancel",
+    "status": 202,
+    "bodySchema": false
+  },
+  {
+    "domain": "jobs",
+    "name": "retryJob",
+    "method": "post",
+    "path": "/jobs/:jobId/retry",
+    "status": 202,
+    "bodySchema": false
+  },
+  {
+    "domain": "speech",
+    "name": "renderChapter",
+    "method": "post",
+    "path": "/chapters/:chapterId/render",
+    "status": 202,
+    "bodySchema": false
+  },
+  {
+    "domain": "publication",
+    "name": "previewPublication",
+    "method": "get",
+    "path": "/projects/:projectId/publication-preview",
+    "status": 200,
+    "bodySchema": false
+  },
+  {
+    "domain": "publication",
+    "name": "exportPublication",
+    "method": "post",
+    "path": "/projects/:projectId/publication-export",
+    "status": 202,
+    "bodySchema": true
+  },
+  {
+    "domain": "files",
+    "name": "downloadFile",
+    "method": "get",
+    "path": "/files/:projectId/*key",
+    "status": 200,
+    "bodySchema": false
+  },
+  {
+    "domain": "diagnostics",
+    "name": "health",
+    "method": "get",
+    "path": "/health",
+    "status": 200,
+    "bodySchema": false
+  }
+]

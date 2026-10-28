@@ -1,0 +1,10 @@
+torch==2.8.0+cu128
+torchaudio==2.8.0+cu128
+torchcodec==0.7.0
+voxcpm==2.0.3
+transformers==4.57.3
+numpy==2.2.6
+scipy==1.15.3
+pillow==11.3.0
+soundfile==0.13.1
+huggingface-hub==0.36.0

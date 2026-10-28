@@ -1,0 +1,294 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+model User {
+  id String @id
+  name String
+  email String @unique
+  emailVerified Boolean @default(false)
+  image String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  sessions Session[]
+  accounts Account[]
+  projects Project[]
+}
+model Session {
+  id String @id
+  expiresAt DateTime
+  token String @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId String
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  @@index([userId])
+}
+model Account {
+  id String @id
+  accountId String
+  providerId String
+  userId String
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  accessToken String?
+  refreshToken String?
+  idToken String?
+  accessTokenExpiresAt DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope String?
+  password String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([userId])
+}
+model Verification {
+  id String @id
+  identifier String
+  value String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([identifier])
+}
+model Project {
+  id String @id @default(uuid())
+  ownerId String
+  owner User @relation(fields:[ownerId],references:[id],onDelete:Cascade)
+  title String
+  textLanguage String @default("ru")
+  speechLanguage String @default("Russian")
+  readingDirection String @default("rtl")
+  revision Int @default(0)
+  deletedAt DateTime?
+  createdAt DateTime @default(now())
+  chapters Chapter[]
+  characters Character[]
+  voices VoiceProfile[]
+  jobs Job[]
+  artifacts AudioArtifact[]
+  @@unique([id,ownerId])
+  @@index([ownerId,deletedAt])
+}
+model Chapter {
+  id String @id @default(uuid())
+  projectId String
+  project Project @relation(fields:[projectId],references:[id],onDelete:Cascade)
+  title String
+  order Int
+  revision Int @default(0)
+  readingDirection String?
+  narratorVoiceVersionId String?
+  narratorVoice VoiceProfileVersion? @relation("NarratorVoice",fields:[narratorVoiceVersionId,projectId],references:[id,projectId],onDelete:NoAction)
+  pages Page[]
+  renders ChapterRender[]
+  @@unique([id,projectId])
+  @@index([projectId,order])
+}
+model Page {
+  id String @id @default(uuid())
+  chapterId String
+  projectId String
+  chapter Chapter @relation(fields:[chapterId,projectId],references:[id,projectId],onDelete:Cascade)
+  order Int
+  name String
+  width Int
+  height Int
+  sourceKey String
+  imageKey String
+  previewKey String
+  checksum String
+  transform Json
+  revision Int @default(0)
+  panels Panel[]
+  utterances Utterance[]
+  analyses AnalysisRun[]
+  appearances CharacterAppearance[]
+  @@unique([id,projectId])
+  @@index([chapterId,order])
+}
+model Panel {
+  id String @id
+  pageId String
+  projectId String
+  page Page @relation(fields:[pageId,projectId],references:[id,projectId],onDelete:Cascade)
+  bbox Json
+  order Int
+  source String @default("manual")
+  utterances Utterance[]
+  @@unique([id,pageId,projectId])
+  @@index([pageId,order])
+}
+model Utterance {
+  id String @id
+  pageId String
+  projectId String
+  page Page @relation(fields:[pageId,projectId],references:[id,projectId],onDelete:Cascade)
+  panelId String?
+  panel Panel? @relation(fields:[panelId,pageId,projectId],references:[id,pageId,projectId],onDelete:NoAction,onUpdate:NoAction)
+  bbox Json
+  order Int
+  kind String @default("dialogue")
+  originalText String
+  spokenText String
+  characterId String?
+  character Character? @relation(fields:[characterId,projectId],references:[id,projectId],onDelete:NoAction)
+  voiceVersionId String?
+  activeAudioId String?
+  voice VoiceProfileVersion? @relation(fields:[voiceVersionId,projectId],references:[id,projectId],onDelete:NoAction)
+  pauseMs Int @default(300)
+  included Boolean @default(true)
+  reviewStatus String @default("unreviewed")
+  revision Int @default(0)
+  @@index([pageId,order])
+}
+model Character {
+  id String @id @default(uuid())
+  projectId String
+  project Project @relation(fields:[projectId],references:[id],onDelete:Cascade)
+  name String
+  description String @default("")
+  status String @default("active")
+  defaultVoiceVersionId String?
+  defaultVoice VoiceProfileVersion? @relation("DefaultCharacterVoice",fields:[defaultVoiceVersionId,projectId],references:[id,projectId],onDelete:NoAction)
+  revision Int @default(0)
+  references CharacterReference[]
+  utterances Utterance[]
+  @@unique([id,projectId])
+}
+model CharacterReference {
+  id String @id @default(uuid())
+  projectId String
+  characterId String
+  character Character @relation(fields:[characterId,projectId],references:[id,projectId],onDelete:Cascade)
+  cropKey String
+  pageId String
+  bbox Json
+  confirmed Boolean @default(true)
+  encoderRevision String?
+  embedding Unsupported("vector(768)")?
+  @@index([characterId])
+}
+model CharacterAppearance {
+  id String @id @default(uuid())
+  pageId String
+  projectId String
+  page Page @relation(fields:[pageId,projectId],references:[id,projectId],onDelete:Cascade)
+  bbox Json
+  candidates Json
+  confirmedCharacterId String?
+  @@index([pageId])
+}
+model VoiceProfile {
+  id String @id @default(uuid())
+  projectId String
+  project Project @relation(fields:[projectId],references:[id],onDelete:Cascade)
+  name String
+  versions VoiceProfileVersion[]
+  @@unique([id,projectId])
+}
+model VoiceProfileVersion {
+  id String @id @default(uuid())
+  profileId String
+  projectId String
+  profile VoiceProfile @relation(fields:[profileId,projectId],references:[id,projectId],onDelete:Cascade)
+  referenceKey String
+  transcript String
+  language String
+  checksum String
+  modelRevision String
+  settings Json
+  createdAt DateTime @default(now())
+  utterances Utterance[]
+  defaultFor Character[] @relation("DefaultCharacterVoice")
+  narratorFor Chapter[] @relation("NarratorVoice")
+  @@unique([id,projectId])
+}
+model AnalysisRun {
+  id String @id @default(uuid())
+  pageId String
+  projectId String
+  page Page @relation(fields:[pageId,projectId],references:[id,projectId],onDelete:Cascade)
+  inputRevision Int
+  modelRevision String
+  promptVersion String
+  proposal Json
+  status String @default("proposed")
+  createdAt DateTime @default(now())
+}
+model Job {
+  id String @id @default(uuid())
+  projectId String
+  project Project @relation(fields:[projectId,ownerId],references:[id,ownerId],onDelete:Cascade)
+  ownerId String
+  kind String
+  status String @default("queued")
+  stage String @default("queued")
+  progress Json?
+  batchId String?
+  input Json
+  result Json?
+  error String?
+  attemptToken String?
+  attempts Int @default(0)
+  heartbeatAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  outbox OutboxEvent?
+  idempotencyKey String
+  @@unique([projectId,kind,idempotencyKey])
+  @@index([status,updatedAt])
+  @@index([projectId,batchId])
+}
+model OutboxEvent {
+  id String @id @default(uuid())
+  jobId String @unique
+  job Job @relation(fields:[jobId],references:[id],onDelete:Cascade)
+  deliveredAt DateTime?
+  createdAt DateTime @default(now())
+  @@index([deliveredAt,createdAt])
+}
+model AudioArtifact {
+  id String @id @default(uuid())
+  projectId String
+  ownerId String
+  project Project @relation(fields:[projectId,ownerId],references:[id,ownerId],onDelete:Cascade)
+  utteranceId String
+  inputHash String
+  snapshot Json
+  fileKey String
+  sourceKey String
+  duration Float
+  sampleRate Int
+  sampleCount Int
+  modelRevision String
+  createdAt DateTime @default(now())
+  @@unique([projectId,inputHash])
+  @@index([projectId,utteranceId])
+}
+model ChapterRender {
+  id String @id @default(uuid())
+  chapterId String
+  chapter Chapter @relation(fields:[chapterId],references:[id],onDelete:Cascade)
+  projectId String
+  inputRevision Int
+  fileKey String
+  manifest Json
+  createdAt DateTime @default(now())
+  @@index([chapterId,createdAt])
+}
+model CharacterMerge {
+  id String @id @default(uuid())
+  projectId String
+  sourceId String
+  targetId String
+  before Json
+  assignments Json
+  status String @default("applied")
+  createdAt DateTime @default(now())
+  @@index([projectId,createdAt])
+}
